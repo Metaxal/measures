@@ -47,7 +47,15 @@ Measures can be turned back to human readable values with `measure->value':
 15
 ```
 
-Adding or subtracting measures with different units raises an `exn:fail:unit` exception.
+Adding or subtracting measures with different units raises an `exn:fail:unit` exception:
+```racket
+> (measure->value (m+ '(3 m (h -1)) '(2 m h)))
+Error: Measures must have the same units.
+Got: #<set: #(struct:unit m 1) #(struct:unit h 1)> and #<set: #(struct:unit m 1) #(struct:unit h -1)>
+
+> (measure->value (m+ '(3 m (h -1)) '(2 m (h -1))))
+'(5 m (h -1))
+```
 
 Note that this collection does _not_ automatically convert between measures,
 for example pounds to grams, but it should not be too difficult to add that

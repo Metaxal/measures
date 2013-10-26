@@ -44,7 +44,7 @@
   (unit? unit? . -> . unit?)
   (unless (unit-same? u1 u2)
     (raise (exn:fail:unit
-            (format "Units are not the same. Got: ~a and ~a" 
+            (format "Error: Units are not the same.\n Got: ~a and ~a" 
                     (unit-symbol u1)
                     (unit-symbol u2))
             (current-continuation-marks))))
@@ -72,7 +72,7 @@
   (measure? measure? . -> . measure?)
   (unless (measure-units-equal? m1 m2)
     (raise (exn:fail:unit
-            (format "Values must have the same units.\nGot: ~a and ~a"
+            (format "Error: Measures must have the same units.\nGot: ~a and ~a"
                     (measure-units m1)
                     (measure-units m2))
             (current-continuation-marks))))
