@@ -11,13 +11,13 @@ Basic arithmetic operations (`m+` `m-` `m*` `m/`) are defined to work with measu
 To ease human interaction, measures can be written in an simple Domain Specific Language, that turns list-based numbers to measures.
 A DSL measure can then be:
 * a number alone,
-* a list with a number followed by one or more DSL unit.
+* a list with a number followed by one or more DSL units.
 
 A DSL unit can be:
 * a symbol alone (taking the 1 exponent by default),
 * a list with a symbol and an exponent.
 
-The procedure `m` is a helper turns a DSL measure into a `measure`.
+The procedure `m` is a helper to turn a DSL measure into a `measure`.
 
 Example:
 ```racket
@@ -70,6 +70,9 @@ However, explicit conversions are handled correctly, and units with exponent 0 a
            '(1 h))))
 '(36.0 mi (h -1))
 ```
+
+Some useful conversions can be found here:
+http://en.wikipedia.org/wiki/SI_derived_unit
 
 You may also be interested in Doug Williams scientific collection:
 http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html

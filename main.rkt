@@ -1,4 +1,6 @@
 #lang racket/base
 
-(require "measures.rkt")
-(provide (all-from-out "measures.rkt"))
+(require "measures.rkt"
+         "converters.rkt")
+(provide (all-from-out "measures.rkt"
+                       "converters.rkt"))

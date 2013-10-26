@@ -9,6 +9,7 @@
          racket/list)
 
 ;;; No automatic conversion between measures
+;;; See http://en.wikipedia.org/wiki/SI_derived_unit
 
 ;;;
 ;;; Data structure and basic operations
