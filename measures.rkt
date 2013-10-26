@@ -21,6 +21,8 @@
          unit-equal?
          unit-same?
          measure-units-equal?
+         measure-offset
+         measure-find-unit-expt
          m mzero? m+ m- m* m/
          measure->value
          )
@@ -67,11 +69,30 @@
   (set=? (measure-units m1)
          (measure-units m2)))
 
+(define/contract (measure-find-unit-expt m1 unit-sym)
+  (measure? symbol? . -> . number?)
+  (define u (findf (λ(u)(eq? unit-sym (unit-symbol u)))
+                   (set->list (measure-units m1))))
+  (if u (unit-expt u) 0))
+
+(module+ test
+  (let ([m1 (m '(1 a b (c -1) (d 1) (e 2) (f 3)))])
+    (check-equal? (measure-find-unit-expt m1 'e) 2)
+    (check-equal? (measure-find-unit-expt m1 'c) -1)
+    (check-equal? (measure-find-unit-expt m1 'z) 0)))
+
 ;;;
 ;;; Binary operations on measures
 ;;;
 
-;; 
+;; Adds offset to m1's quantity.
+(define/contract (measure-offset m1 offset)
+  (measure? number? . -> . measure?)
+  (measure (+ (measure-quantity m1) offset)
+           (measure-units m1)))
+
+;; Adds m1 and m2's quantity.
+;; m1 and m2 must have the same units.
 (define/contract (measure-add m1 m2)
   (measure? measure? . -> . measure?)
   (unless (measure-units-equal? m1 m2)
@@ -80,8 +101,7 @@
                     (measure-units m1)
                     (measure-units m2))
             (current-continuation-marks))))
-  (measure (+ (measure-quantity m1) (measure-quantity m2))
-         (measure-units m1)))
+  (measure-offset m1 (measure-quantity m2)))
 
 (define/contract (measure-opposite v)
   (measure? . -> . measure?)
