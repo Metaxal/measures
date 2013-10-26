@@ -163,7 +163,7 @@
          (list (list (? number? n) units ...)))
      (measure n (list->set (map ->unit units)))]))
 
-(define (m . args) 
+(define (m . args)
   (->measure args))
 
 (define (mzero? x)

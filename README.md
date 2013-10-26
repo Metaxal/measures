@@ -17,9 +17,23 @@ A DSL unit can be:
 * a symbol alone (taking the 1 exponent by default),
 * a list with a symbol and an exponent.
 
+The procedure `m` is a helper turns a DSL measure into a `measure`.
+
 Example:
 ```racket
 > (require measures)
+
+> (m 3)
+(measure 3 (set))
+
+> (m 3 's)
+(measure 3 (set (unit 's 1)))
+
+> (m 3 's '(m -1))
+(measure 3 (set (unit 's 1) (unit 'm -1)))
+```
+The arithmetic operators automatically convert DSL measures into `measures`:
+```racket
 > (m* '(3 s) 5 '(10 m))
 (measure 150 (set (unit 'm 1) (unit 's 1)))
 ```
