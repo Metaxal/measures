@@ -18,7 +18,7 @@
          unit-same?
          measure-units-equal?
          m mzero? m+ m- m* m/
-         measure->
+         measure->value
          )
 
 ;; symbol : symbol? ; SI symbol
@@ -209,13 +209,13 @@
 ;;; Some transformers for easier human reading
 ;;;
 
-(define/contract (unit-> u)
+(define/contract (unit->value u)
   (unit? . -> . any/c)
   (if (= 1 (unit-expt u))
       (unit-symbol u)
       (list (unit-symbol u) (unit-expt u))))
 
-(define/contract (measure-> m1)
+(define/contract (measure->value m1)
   (measure? . -> . any/c)
   (define l (sort (set->list (measure-units m1)) 
                   (λ(u1 u2)(or (> (unit-expt u1) (unit-expt u2))
@@ -224,16 +224,16 @@
   (define q (measure-quantity m1))
   (if (empty? l)
       q
-      (cons q (map unit-> l))))
+      (cons q (map unit->value l))))
 
 (module+ test
   (check-equal?
-   (measure-> (m '(4 (N 2) m (s -1))))
+   (measure->value (m '(4 (N 2) m (s -1))))
    '(4 (N 2) m (s -1)))
   
-  (check-equal? (measure-> (m 4)) 
+  (check-equal? (measure->value (m 4)) 
                 4)
   
-  (check-equal? (measure-> (m '(4 s))) 
+  (check-equal? (measure->value (m '(4 s))) 
                 '(4 s))
   )

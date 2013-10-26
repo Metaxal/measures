@@ -3,12 +3,12 @@ Units and Measurements
 
 Units and measurements in Racket.
 
-A `unit` is a symbol associated with an exponent.
-A `measure` is a number associated with a set of units.
+A `unit` is a symbol and an exponent.
+A `measure` is a number and a set of units.
 
 Basic arithmetic operations (`m+` `m-` `m*` `m/`) are defined to work with measures.
 
-A simple Domain Specific Language turns list-based numbers to measures.
+To ease human interaction, measures can be written in an simple Domain Specific Language, that turns list-based numbers to measures.
 A DSL measure can then be:
 * a number alone,
 * a list with a number followed by one or more DSL unit.
@@ -23,20 +23,24 @@ Example:
 > (m* '(3 s) 5 '(10 m))
 (measure 150 (set (unit 'm 1) (unit 's 1)))
 ```
-Measures can be turned back to human readable values with `measure->':
+Measures can be turned back to human readable values with `measure->value':
 ```racket
-> (measure-> (m* '(3 s) 5 '(10 m)))
+> (measure->value (m* '(3 s) 5 '(10 m)))
 '(150 m s)
+
+> (measure->value
+   (m* '(3 s) '(5 (s -1))))
+15
 ```
 
-Adding or subtracting measure with the wrong types raises an `exn:fail:unit` exception.
+Adding or subtracting measures with different units raises an `exn:fail:unit` exception.
 
 Note that this collection does _not_ automatically convert between measures,
 for example pounds to grams, but it should not be too difficult to add that
 on top of it.
 However, explicit conversions are handled correctly, and units with exponent 0 are removed:
 ```racket
-> (measure->
+> (measure->value
    (m* '(52.8 ft (s -1))
        (m/ '(1 mi)
            '(5280 ft))
