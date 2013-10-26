@@ -1,5 +1,8 @@
 #lang racket/base
 
+;;; Laurent Orseau <laurent orseau gmail com> -- 2013-10-26
+;;; License: LGPL (see LICENSE)
+
 (require racket/contract
          racket/set
          racket/match
