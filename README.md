@@ -19,7 +19,7 @@ A DSL unit can be:
 
 Example:
 ```racket
-> (require units)
+> (require measures)
 > (m* '(3 s) 5 '(10 m))
 (measure 150 (set (unit 'm 1) (unit 's 1)))
 ```
@@ -45,5 +45,6 @@ However, explicit conversions are handled correctly, and units with exponent 0 a
 '(36.0 mi (h -1))
 ```
 
-
+You may also be interested in Doug Williams scientific collection:
+http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html
 
