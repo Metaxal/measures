@@ -3,6 +3,11 @@ Units and Measurements
 
 Units and measurements in Racket.
 
+First some warnings:
+* This collection has been little tested. Use with caution and please report any error that you find to laurent orseau gmail com.
+* Be cautious with non-linear converters (e.g., °F to K), as converting a temperature difference is not the same as converting a temperature.
+
+
 A `unit` is a symbol and an exponent.
 A `measure` is a number and a set of units.
 
