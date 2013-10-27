@@ -1,18 +1,21 @@
 #lang racket/base
 (require "measures.rkt"
          racket/dict
+         racket/list
          racket/match
          racket/contract)
 
 (provide (all-defined-out))
 
-;;; Some conversions between SI units and non-SI units
-;;; (no direct conversion between non-SI and non-SI units)
+;;; Some conversions between SI units and non-SI units.
+;;; Indirect conversions can be found if there exists an intermediate SI unit.
 
 ;;; http://en.wikipedia.org/wiki/Conversion_of_units
+;;; http://futureboy.us/frinkdocs/#SampleCalculations
 
 ;;; TODO: 
-;;; - conversion with multiple dimensions: Litre -> m^3; Newton -> kg.m/s^2
+;;; - conversion with multiple dimensions: 
+;;;  Litre -> m^3; Newton -> kg.m/s^2; Pascal -> kg/(m.s^2); Hz -> 1/s
 ;;; - Lots of tests
 
 (module+ test 
@@ -78,18 +81,44 @@
                       (list from-sym to-sym)
                       (list to-sym from-sym))]
              [conv (dict-ref converters key)]
-            [m-out (for/fold ([m (if (< expt 0) (measure-inverse m1) m1)]
-                        ) ([i (abs expt)])
+             [m-out (for/fold ([m (if (< expt 0) (measure-inverse m1) m1)]
+                               ) ([i (abs expt)])
                       (conv m))])
         (if (< expt 0)
             (measure-inverse m-out)
             m-out))))
 
+;; Returns a (listof (symbol? symbol?)) if a conversion sequence can be found from
+;; from-sym to to-sym using an intermediate unit, or #f if none is found.
+(define (search-indirect-conversion from-sym to-sym)
+  (for/or ([p1 (in-dict-keys converters)])
+    (and (eq? (first p1) from-sym)
+         (let ([p2 (for/or ([p2 (in-dict-keys converters)])
+                     (and (eq? (second p2) to-sym)
+                          p2))])
+           (and p2 (list p1 p2))))))
+
+
+;; Like `convert' but make several conversions
+;; in sequence specified by the from-to-list.
+;; First converts m1 to a measure if possible.
+;; Can also perform indirect conversions if there exists an SI unit that can be used 
+;; as an intermediate unit.
+;; TODO: If a from-to is only a to, find the best conversion (test all units in the given measure)
+(define (convert* m1 from-to-list)
+  (for/fold ([m1 (m m1)]
+             )([ft from-to-list])
+    (if (dict-has-key? converters ft)
+        (apply convert m1 ft)
+        (let ([l (apply search-indirect-conversion ft)])
+          (if l
+              (convert* m1 l)
+              (raise (exn:fail:unit (format "Error: Unit conversion not found for ~a" ft)
+                                    (current-continuation-marks))))))))
 
 ;;;
 ;;; Temperature
 ;;;
-;;; http://en.wikipedia.org/wiki/Temperature_conversion_formulas
 
 (define-values (kelvin->farenheit farenheit->kelvin)
   (make-affine-converters 'K '°F 9/5 -459.67))
@@ -122,7 +151,7 @@
    (nm m 1e-9)
    ;
    (Å  m 1e-10)
-   (ly m 9.4607304725808e15) ; light year. Distance light travels in vacuum in 365.25 days
+   (ly m 9.4607304725808e15) ; light year.
    ;
    (mi m 1609.344)
    (yd m 0.9144)
@@ -136,8 +165,9 @@
    0.01)
   
   (check-measure=?
-   (convert (convert (m 50 'mi '(h -1)) 'mi 'm)
-            'h 's)
+   (convert* (m 50 'mi '(h -1))
+             '((mi m)
+               (h s)))
    (m 22.352 'm '(s -1)))
   
   )
@@ -147,11 +177,13 @@
 ;;;
 
 (add-linear-converters!
- '((lb kg 0.45359237)
-   (oz kg 28e-3)
-   (g kg 1e-3)
+ '((t  kg 1e6)
+   (g  kg 1e-3)
    (mg kg 1e-6)
-   (t kg 1e6)))
+   ;
+   (lb kg 0.45359237)
+   (oz kg 28e-3)
+   ))
 
 (module+ test
   (check-measure=? (convert (m 100 'kg) 'kg 'lb)
@@ -171,6 +203,21 @@
 ;;;
 
 (add-linear-converters!
-  '((h s 3600)
+  '((mo  s 2592000) ; month
+    (wk  s 604800)
+    (h   s 3600) ; hour
+    (d   s 86400) ; day
     (min s 60)))
 
+(module+ test
+  (check-measure=? (convert* (m 4 'wk) '((wk mo)))
+                   (m 14/15 'mo))
+  )
+
+;;;
+;;; Force
+;;;
+
+; Simple, But I'd like to use the converter instead
+(define (newton->compound m1)
+  (m* m1 '(1 (N -1) kg m (s -2))))

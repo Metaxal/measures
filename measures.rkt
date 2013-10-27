@@ -181,7 +181,7 @@
 
 (define (->measure arg)
   (match arg
-    [(? measure?) arg]
+    [(or (? measure? m1) (list (? measure? m1))) m1]
     [(or (? number? n) (list (? number? n)))
      (measure n (set))]
     [(or (list (? number? n) units ...)

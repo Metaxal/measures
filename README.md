@@ -57,18 +57,30 @@ Got: #<set: #(struct:unit m 1) #(struct:unit h 1)> and #<set: #(struct:unit m 1)
 '(5 m (h -1))
 ```
 
-Note that this collection does _not_ automatically convert between measures,
-for example pounds to grams, but it should not be too difficult to add that
-on top of it.
-However, explicit conversions are handled correctly, and units with exponent 0 are removed:
+Conversions between units can be performed using the `convert*` function.
+It takes a measure and a list of conversions and returns the converted measure.
+Units with exponent 0 are removed, and conversions between non-SI units are possible
+only if there exists an intermediate SI unit.
+For example, to convert feet/seconds to miles/hour:
 ```racket
 > (measure->value
-   (m* '(52.8 ft (s -1))
-       (m/ '(1 mi)
-           '(5280 ft))
-       (m/ '(3600 s)
-           '(1 h))))
+   (convert* '(52.8 ft (s -1))
+             '((ft mi) (s h))))
 '(36.0 mi (h -1))
+```
+To know how many cubic meters there are in 100 cubic centimeters:
+```racket
+> (measure->value
+   (convert* '(100 (cm 3))
+             '((cm m))))
+'(0.0001 (m 3))
+```
+Or how many degree Celsius make 100 degree Fahrenheit:
+```racket
+> (measure->value
+   (convert* '(100 °F)
+             '((°F °C))))
+'(37.77777777777783 °C)
 ```
 
 Some useful conversions can be found here:
