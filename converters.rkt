@@ -94,27 +94,55 @@
   (for/or ([p1 (in-dict-keys converters)])
     (and (eq? (first p1) from-sym)
          (let ([p2 (for/or ([p2 (in-dict-keys converters)])
-                     (and (eq? (second p2) to-sym)
+                     (and (eq? (first p2) (second p1))
+                          (eq? (second p2) to-sym)
                           p2))])
            (and p2 (list p1 p2))))))
 
 
-;; Like `convert' but make several conversions
-;; in sequence specified by the from-to-list.
-;; First converts m1 to a measure if possible.
+;; Like `convert' but make several conversions in sequence specified by the `from-to-list' list.
+;; First converts `m1' to a measure if possible.
 ;; Can also perform indirect conversions if there exists an SI unit that can be used 
 ;; as an intermediate unit.
-;; TODO: If a from-to is only a to, find the best conversion (test all units in the given measure)
-(define (convert* m1 from-to-list)
-  (for/fold ([m1 (m m1)]
+;; Each element in `from-to-list' is either a list of symbols or a symbol.
+;; If it is a list, `convert*' tries to convert it directly if possible,
+;; or searches for an indirect conversion from the `car' to the `cdr' of the pair.
+;; If the element is a single symbol s, then `convert*' searches for a unit in m1
+;; to convert to s, possibly with indirection.
+;; If `on-fail' specifies the return value in case a conversion is not possible:
+;;   - 'error raises an error
+;;   - 'skip continues through the conversion list, skipping the faulty conversion
+;;   - any other value is the value used to continue the conversion.
+(define/contract (convert* m1 from-to-list #:on-fail [on-fail 'error])
+  ([any/c (listof (or/c symbol? (list/c symbol? symbol?)))] 
+   [#:on-fail (or/c 'error 'skip any/c)]
+   . ->* . any/c)
+  (define m2 (->measure m1))
+  (unless m2
+    (raise-argument-error 'convert* "Convertible to measure?" m1))
+  (for/fold ([m1 m2]
              )([ft from-to-list])
-    (if (dict-has-key? converters ft)
-        (apply convert m1 ft)
-        (let ([l (apply search-indirect-conversion ft)])
-          (if l
-              (convert* m1 l)
-              (raise (exn:fail:unit (format "Error: Unit conversion not found for ~a" ft)
-                                    (current-continuation-marks))))))))
+    (or
+      (cond 
+        [(symbol? ft)
+         (define syms (measure-unit-symbols m1))
+         ; try to convert to ft from one of the units of the measure (try to guess)
+         (for/or ([s syms])
+           (convert* m1 (list (list s ft)) #:on-fail #f))]
+        [(dict-has-key? converters ft)
+         (apply convert m1 ft)]
+        [(apply search-indirect-conversion ft)
+         => 
+         (λ(l)(convert* m1 l))]
+        [else #f])
+      ; In case the first cond returns #f (even if one branch was taken):
+      (cond
+        [(eq? on-fail 'error)
+         (raise (exn:fail:unit (format "Error: Unit conversion not found for ~a" ft)
+                               (current-continuation-marks)))]
+        [(eq? on-fail 'skip)
+         m1]
+        [else on-fail]))))
 
 ;;;
 ;;; Temperature
@@ -170,6 +198,10 @@
                (h s)))
    (m 22.352 'm '(s -1)))
   
+  (check-exn exn:fail:unit? (λ()(convert* '(42 m) '(s))))
+  (check-equal? (convert* '(42 m) '(s) #:on-fail 'skip) (m 42 'm))
+  (check-equal? (convert* '(42 m) '(s) #:on-fail 'something) 'something)
+
   )
 
 ;;;

@@ -61,11 +61,12 @@ Conversions between units can be performed using the `convert*` function.
 It takes a measure and a list of conversions and returns the converted measure.
 Units with exponent 0 are removed, and conversions between non-SI units are possible
 only if there exists an intermediate SI unit.
+
 For example, to convert feet/seconds to miles/hour:
 ```racket
 > (measure->value
    (convert* '(52.8 ft (s -1))
-             '((ft mi) (s h))))
+             '(mi h)))
 '(36.0 mi (h -1))
 ```
 To know how many cubic meters there are in 100 cubic centimeters:

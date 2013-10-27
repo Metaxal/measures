@@ -21,11 +21,13 @@
          unit-equal?
          unit-same?
          measure-units-equal?
+         measure-unit-symbols
          measure-offset
          measure-inverse
          measure-find-unit-expt
          m mzero? m+ m- m* m/
          measure->value
+         ->measure
          )
 
 ;; symbol : symbol? ; SI symbol
@@ -75,6 +77,10 @@
   (define u (findf (λ(u)(eq? unit-sym (unit-symbol u)))
                    (set->list (measure-units m1))))
   (if u (unit-expt u) 0))
+
+(define/contract (measure-unit-symbols m1)
+  (measure? . -> . (listof symbol?))
+  (set-map (measure-units m1) unit-symbol))
 
 (module+ test
   (let ([m1 (m '(1 a b (c -1) (d 1) (e 2) (f 3)))])
@@ -186,7 +192,8 @@
      (measure n (set))]
     [(or (list (? number? n) units ...)
          (list (list (? number? n) units ...)))
-     (measure n (list->set (map ->unit units)))]))
+     (measure n (list->set (map ->unit units)))]
+    [else #f]))
 
 (define (m . args)
   (->measure args))
