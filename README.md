@@ -73,14 +73,14 @@ To know how many cubic meters there are in 100 cubic centimeters:
 ```racket
 > (measure->value
    (convert* '(100 (cm 3))
-             '((cm m))))
+             '(m)))
 '(0.0001 (m 3))
 ```
 Or how many degree Celsius make 100 degree Fahrenheit:
 ```racket
 > (measure->value
    (convert* '(100 °F)
-             '((°F °C))))
+             '(°C)))
 '(37.77777777777783 °C)
 ```
 
