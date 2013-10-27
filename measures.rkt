@@ -22,6 +22,7 @@
          unit-same?
          measure-units-equal?
          measure-offset
+         measure-inverse
          measure-find-unit-expt
          m mzero? m+ m- m* m/
          measure->value
@@ -139,7 +140,7 @@
 (define/contract (measure-inverse v)
   (measure? . -> . measure?)
   (measure (/ (measure-quantity v))
-         (set-map (measure-units v) (λ(u)(unit (unit-symbol u) (- (unit-expt u)))))))
+           (list->set (set-map (measure-units v) (λ(u)(unit (unit-symbol u) (- (unit-expt u))))))))
 
 (define/contract (measure-divide m1 m2)
   (measure? measure? . -> . measure?)

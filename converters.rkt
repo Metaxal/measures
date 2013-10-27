@@ -1,6 +1,7 @@
 #lang racket/base
 (require "measures.rkt"
          racket/dict
+         racket/match
          racket/contract)
 
 (provide (all-defined-out))
@@ -11,17 +12,22 @@
 ;;; http://en.wikipedia.org/wiki/Conversion_of_units
 
 ;;; TODO: 
-;;; - Lots of tests?
-;;;   (but actually code reviews would be better I guess)
+;;; - conversion with multiple dimensions: Litre -> m^3; Newton -> kg.m/s^2
+;;; - Lots of tests
 
 (module+ test 
   (require rackunit)
-  (define (check-converter a->b b->a va [epsilon 0.])
-    (define vb (a->b va))
-    (define vc (b->a vb))
-    (check-= (measure-quantity va)
-             (measure-quantity vc)
-             epsilon)))
+  
+  (define (check-measure=? m1 m2 [epsilon 0.])
+    (check measure-units-equal? m1 m2)
+    (check-= (measure-quantity m1)
+             (measure-quantity m2)
+             epsilon))
+  
+  (define (check-converter a->b b->a ma [epsilon 0.])
+    (define mb (a->b ma))
+    (define mc (b->a mb))
+    (check-measure=? ma mc epsilon)))
 
 
 (define converters (make-hash))
@@ -49,16 +55,35 @@
 (define (make-linear-converters from-sym to-sym ratio)
   (make-affine-converters from-sym to-sym ratio 0))
 
-(define (convert m from-sym to-sym)
-  (define expt (measure-find-unit-expt m from-sym))
+(define (add-linear-converters! from-to-ratio-list)
+  (for ([v from-to-ratio-list])
+    (match v
+      [(list from-sym to-sym ratio)
+       (make-linear-converters from-sym to-sym ratio)])))
+
+
+;; Converts all from-sym units of m to to-sym units, whatever the exponent.
+;; When the exponent is negative, instead of invert-convert-invert,
+;; we could simply apply the opposite (to to from) transform,
+;; but this work only if the conversion is linear, e.g. not for °F to Kelvin.
+;; OTOH, non-linear conversions are not "safe" (e.g. to convert °F/s to °C/s,
+;; the non-linear transform probably does not apply here, as the quantity is
+;; probably the difference between two °F)
+(define (convert m1 from-sym to-sym)
+  (define expt (measure-find-unit-expt m1 from-sym))
   (if (= 0 expt)
-      m
-      (let* ([key (if (> expt 0) 
+      m1
+      (let* ([key (list from-sym to-sym)
+                  #;(if (> expt 0) 
                       (list from-sym to-sym)
                       (list to-sym from-sym))]
-             [conv (dict-ref converters key)])
-        (for/fold ([m m]) ([i (abs expt)])
-          (conv m)))))
+             [conv (dict-ref converters key)]
+            [m-out (for/fold ([m (if (< expt 0) (measure-inverse m1) m1)]
+                        ) ([i (abs expt)])
+                      (conv m))])
+        (if (< expt 0)
+            (measure-inverse m-out)
+            m-out))))
 
 
 ;;;
@@ -69,49 +94,83 @@
 (define-values (kelvin->farenheit farenheit->kelvin)
   (make-affine-converters 'K '°F 9/5 -459.67))
 
-(module+ test
-  (check-converter kelvin->farenheit farenheit->kelvin (m 5.0 'K)))
-
 (define-values (kelvin->celsius celsius->kelvin)
   (make-affine-converters 'K '°C 1 -273.15))
 
-(define (kelvin->celsius2 k)
-  (m* (m- k '(273.15 K)) 
-      '(1 °C (K -1))))
+(module+ test
+  (check-converter kelvin->farenheit farenheit->kelvin (m 5.0 'K))
+  (check-converter kelvin->celsius celsius->kelvin (m 5.0 'K))
+  
+  (check-measure=? (convert (m 100 '°F) '°F 'K)
+                   (m 310.928 'K) 0.01)
+  
+  (check-measure=? (convert (m 100 '°C) '°C 'K)
+                   (m 373.15 'K) 0.01)
+  )
 
-(define (celsius->kelvin2 c)
-  (m* (m+ c '(273.15 °C)) 
-      '(1 K (°C -1))))
+;;;
+;;; Length
+;;;
+
+(add-linear-converters!
+ '((AU m 149597870700) ; Astronomical Unit. Distance from Earth to Sun.
+   (km m 1e3)
+   (dm m 1e-1)
+   (cm m 1e-2)
+   (mm m 1e-3)
+   (μ  m 1e-6)
+   (nm m 1e-9)
+   ;
+   (Å  m 1e-10)
+   (ly m 9.4607304725808e15) ; light year. Distance light travels in vacuum in 365.25 days
+   ;
+   (mi m 1609.344)
+   (yd m 0.9144)
+   (ft m 0.3048)
+   (in m 0.0254)))
 
 (module+ test
-  (check-converter kelvin->celsius celsius->kelvin (m 5.0 'K)))
+  (check-measure=?
+   (convert (m 100 '(ft 2)) 'ft 'm)
+   (m 9.2903 '(m 2))
+   0.01)
+  
+  (check-measure=?
+   (convert (convert (m 50 'mi '(h -1)) 'mi 'm)
+            'h 's)
+   (m 22.352 'm '(s -1)))
+  
+  )
 
 ;;;
 ;;; Mass
 ;;;
 
-(define-values (pound->kilogram kilogram->pound)
-  (make-linear-converters 'lb 'kg 0.45359237))
+(add-linear-converters!
+ '((lb kg 0.45359237)
+   (oz kg 28e-3)
+   (g kg 1e-3)
+   (mg kg 1e-6)
+   (t kg 1e6)))
+
+(module+ test
+  (check-measure=? (convert (m 100 'kg) 'kg 'lb)
+                   (m 220.462 'lb) 0.01)
+  
+  )
+
+;;;
+;;; Volume
+;;;
+
+(add-linear-converters!
+ '())
 
 ;;;
 ;;; Time
 ;;;
 
-(define-values (hour->second second->hour)
-  (make-linear-converters 'h 's 3600))
+(add-linear-converters!
+  '((h s 3600)
+    (min s 60)))
 
-(define-values (minute->second second->minute)
-  (make-linear-converters 'min 's 60))
-
-;;;
-;;; Space
-;;;
-
-(define-values (mile->meter meter->mile)
-  (make-linear-converters 'mi 'm 1609.344))
-
-(module+ test
-  (check-equal?
-   (measure->value (convert (convert (m 50 'mi '(h -1)) 'mi 'm)
-                            'h 's))
-   '(22.352 m (s -1))))
