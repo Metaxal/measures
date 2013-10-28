@@ -25,7 +25,7 @@
          measure-offset
          measure-inverse
          measure-find-unit-expt
-         mzero? m+ m- m* m/
+         mzero? m+ m- m* m/ m^
          measure->value
          ->unit ->measure
          dsl-unit/c dsl-measure/c

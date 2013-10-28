@@ -152,7 +152,7 @@
 ;;; Area
 ;;;
 
-(define-units (m2 square-metre (m* m m))
+(define-units (m2 square-metre (m^ m 2))
   (are  a        100)
   (ha   hectare  #e1e4)
   ;
@@ -166,7 +166,7 @@
 ;;; Volume
 ;;;
 
-(define-units (m3 cubic-metre (m* m m m))
+(define-units (m3 cubic-metre (m^ m 3))
   (L  litre  #e1e-3)
   (dL  decilitre (m/ L 10))
   )
