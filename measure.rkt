@@ -25,9 +25,10 @@
          measure-offset
          measure-inverse
          measure-find-unit-expt
-         m mzero? m+ m- m* m/
+         mzero? m+ m- m* m/
          measure->value
-         ->measure
+         ->unit ->measure
+         dsl-unit/c dsl-measure/c
          )
 
 ;; symbol : symbol? ; SI symbol
@@ -83,7 +84,7 @@
   (set-map (measure-units m1) unit-symbol))
 
 (module+ test
-  (let ([m1 (m '(1 a b (c -1) (d 1) (e 2) (f 3)))])
+  (let ([m1 (m* '(1 a b (c -1) (d 1) (e 2) (f 3)))])
     (check-equal? (measure-find-unit-expt m1 'e) 2)
     (check-equal? (measure-find-unit-expt m1 'c) -1)
     (check-equal? (measure-find-unit-expt m1 'z) 0)))
@@ -143,14 +144,21 @@
          us))
 
 ;; Inverses the quantity and the units.
-(define/contract (measure-inverse v)
+(define/contract (measure-inverse m1)
   (measure? . -> . measure?)
-  (measure (/ (measure-quantity v))
-           (list->set (set-map (measure-units v) (λ(u)(unit (unit-symbol u) (- (unit-expt u))))))))
+  (measure (/ (measure-quantity m1))
+           (list->set (set-map (measure-units m1) 
+                               (λ(u)(unit (unit-symbol u) (- (unit-expt u))))))))
 
 (define/contract (measure-divide m1 m2)
   (measure? measure? . -> . measure?)
   (measure-multiply m1 (measure-inverse m2)))
+
+(define/contract (measure-expt m1 exp)
+  (measure? number? . -> . measure?)
+  (measure (expt (measure-quantity m1) exp)
+           (list->set (set-map (measure-units m1)
+                               (λ(u)(unit (unit-symbol u) (* exp (unit-expt u))))))))
 
 ;; Tests
 
@@ -172,11 +180,26 @@
   
   (check-exn exn:fail:unit?
              (λ()(measure-add m1 m2)))
+  
+  (check-equal? (measure-expt m1 2)
+                (measure 16 (set (unit 'm 2))))
   )
 
 ;;;
 ;;; Some operations for easier human writing
 ;;;
+
+(define dsl-unit/c
+  (or/c unit?
+        symbol?
+        (list/c symbol? number?)))
+
+(define dsl-measure/c
+  (or/c measure?
+        number?
+        dsl-unit/c
+        (cons/c number? (listof dsl-unit/c))
+        (listof dsl-unit/c)))
 
 (define (->unit arg)
   (match arg
@@ -187,16 +210,16 @@
 
 (define (->measure arg)
   (match arg
-    [(or (? measure? m1) (list (? measure? m1))) m1]
-    [(or (? number? n) (list (? number? n)))
+    [(? measure? m1) m1]
+    [(? number? n)
      (measure n (set))]
-    [(or (list (? number? n) units ...)
-         (list (list (? number? n) units ...)))
+    [(? dsl-unit/c u)
+     (measure 1 (set (->unit u)))]
+    [(list (? number? n) units ...)
      (measure n (list->set (map ->unit units)))]
+    [(list (? dsl-unit/c units) ...)
+     (measure 1 (list->set (map ->unit units)))]
     [else #f]))
-
-(define (m . args)
-  (->measure args))
 
 (define (mzero? x)
   (measure-zero? (->measure x)))
@@ -210,15 +233,18 @@
     [(m1 . vl)
      (apply m+ m1 (map measure-opposite (map ->measure vl)))]))
 
-(define (m* m1 . vl) 
+(define (m* . vl) 
   ; Todo: optimize if zero?
-  (foldl measure-multiply (->measure m1) (map ->measure vl)))
+  (foldl measure-multiply (->measure 1) (map ->measure vl)))
 
 (define m/ 
   (case-lambda
     [(m1) (measure-inverse (->measure m1))]
     [(m1 . vl)
      (apply m* m1 (map measure-inverse (map ->measure vl)))]))
+
+(define (m^ m1 exp)
+  (measure-expt (->measure m1) exp))
 
 (module+ test
   (check-equal? (m* '(3 s) '(360 m (s -1)))
@@ -231,10 +257,10 @@
                         '(5280 ft))
                     (m/ '(3600 s)
                         '(1 h)))
-                (m '(36.0 mi (h -1))))
+                (m* '(36.0 mi (h -1))))
   
   (check-equal? (m- '(23 s) '(2 s) '(10 s))
-                (m '(11 s)))
+                (m* '(11 s)))
   )
 
 ;;;
@@ -260,12 +286,12 @@
 
 (module+ test
   (check-equal?
-   (measure->value (m '(4 (N 2) m (s -1))))
+   (measure->value (m* '(4 (N 2) m (s -1))))
    '(4 (N 2) m (s -1)))
   
-  (check-equal? (measure->value (m 4)) 
+  (check-equal? (measure->value (m* 4)) 
                 4)
   
-  (check-equal? (measure->value (m '(4 s))) 
+  (check-equal? (measure->value (m* '(4 s))) 
                 '(4 s))
   )
