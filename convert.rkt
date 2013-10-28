@@ -105,14 +105,14 @@
 
 ;; Prefixes are suffixed by a dot to avoid collision with other unit names
 (define-units (_SI_u _SI_unity (m*))
-  (Y.  yotta 1e24)
-  (Z.  zetta 1e21)
-  (E.  exa   1e18)
-  (P.  peta  1e15)
-  (T.  tera  1e12)
-  (G.  giga  1e9)
-  (M.  mega  1e6)
-  (k.  kilo  1e3)
+  (Y.  yotta #e1e24)
+  (Z.  zetta #e1e21)
+  (E.  exa   #e1e18)
+  (P.  peta  #e1e15)
+  (T.  tera  #e1e12)
+  (G.  giga  #e1e9)
+  (M.  mega  #e1e6)
+  (k.  kilo  #e1e3)
   (h.  hecto 100)
   (da. deca  10)
   (d.  deci  1/10)
@@ -133,7 +133,7 @@
 
 (define-units (m metre)
   (AU  astronomical-unit  149597870700) ; Astronomical Unit. Distance from Earth to Sun.
-  (km  kilometre   1e3)
+  (km  kilometre   #e1e3)
   (dm  decimetre   #e1e-1)
   (cm  centimetre  #e1e-2)
   (mm  millimetre  #e1e-3)
@@ -153,8 +153,8 @@
 ;;;
 
 (define-units (m2 square-metre (m* m m))
-  (are  a        1e2)
-  (ha   hectare  1e4)
+  (are  a        100)
+  (ha   hectare  #e1e4)
   ;
   (sq-ft  square-foot  (m* ft ft))
   (sq-in  square-inch  (m* in in))
@@ -177,7 +177,7 @@
 ;;;
 
 (define-units (kg kilogram)
-  (t   tonne      1e6)
+  (t   tonne      #e1e6)
   (g   gram       #e1e-3)
   (mg  milligram  #e1e-6)
   ;
@@ -213,7 +213,7 @@
 (define-units (Pa pascal (m* N '(m -2)))
   (atm   atmosphere             101325)
   (at    atmosphere-technical   #e9.80665e4)
-  (bar   _bar                   1e5)
+  (bar   _bar                   #e1e5)
   (mmHg  millimetre-of-mercury  #e133.3224) ; approximately
   (cmHg  centimetre-of-mercury  #e1333.224) ; approximately
   (torr  _torr                  101325/760)

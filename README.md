@@ -155,7 +155,7 @@ Using the `convert*` function it is also possible to request a conversion from S
 It can also be used to convert to unit prefixes:
 ```racket
 > (measure->value (convert* (m* 3 kilo Pa) '(hecto Pa)))
-'(30.0 Pa h.)
+'(30 Pa h.)
 ```
 Notes:
 * Prefixes are followed by a dot to avoid name collision with units.
