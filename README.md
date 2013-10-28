@@ -6,12 +6,46 @@ First some **warnings**:
 
 * This collection has not been extensively tested. Use with caution and
   please [report any error that you
-  find](https://github.com/Metaxal/measures/issues)
+  find](https://github.com/Metaxal/measures/issues).
 
 * Be cautious with non-linear converters (e.g., °F to K), as converting
   a temperature difference is not the same as converting a temperature.
 
-## 1.1. Basic definitions
+## 1.1. Quick example
+
+Say you are traveling at 50 miles per hour:
+
+```racket
+> (define my-speed (m* 50.0 mile (m/ hour)))
+                                            
+> (measure->value my-speed)                 
+'(22.352 m (s -1))                          
+```
+
+How many kilometers/hour is that?
+
+```racket
+> (measure->value (convert* my-speed '(km (h -1))))
+'(80.46719999999999 km (h -1))                     
+```
+
+How many kilometers do you travel during 5 minutes?
+
+```racket
+> (measure->value (convert* (m* my-speed 5 min) 'km))
+'(6.7056000000000004 km)                             
+```
+
+You are quite late and have only 13 minutes left before your meeting,
+and you are 21 miles away. How fast would you need to go to be there in
+time?
+
+```racket
+> (measure->value (convert* (m/ (m* 21.0 mi) (m* 13 min)) '(mi (h -1))))
+'(96.9230769230769 mi (h -1))                                           
+```
+
+## 1.2. Basic definitions
 
 A `unit` is a symbol and an exponent. A `measure` is a number and a set
 of units.
@@ -81,7 +115,7 @@ Got: #<set: #(struct:unit m 1) #(struct:unit h 1)> and
 '(5 m (h -1))                                         
 ```
 
-## 1.2. Units and conversions
+## 1.3. Units and conversions
 
 All units have a short and a long name. The short name is the standard
 symbol, and the long name is more descriptive:

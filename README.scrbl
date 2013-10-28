@@ -14,9 +14,30 @@ Units and measurements in Racket.
 First some @bold{warnings}:
 @itemize[
 @item{This collection has not been extensively tested. Use with caution and please 
-      @hyperlink["https://github.com/Metaxal/measures/issues" "report any error that you find"]}
+      @hyperlink["https://github.com/Metaxal/measures/issues" "report any error that you find"].}
 @item{Be cautious with non-linear converters (e.g., °F to K), as converting a temperature difference
       is not the same as converting a temperature.}
+]
+
+@subsection{Quick example}
+
+Say you are traveling at 50 miles per hour:
+@interaction[#:eval my-eval
+(define my-speed (m* 50. mile (m/ hour)))
+(measure->value my-speed)
+]
+How many kilometers/hour is that?
+@interaction[#:eval my-eval
+(measure->value (convert* my-speed '(km (h -1))))
+]
+How many kilometers do you travel during 5 minutes?
+@interaction[#:eval my-eval
+(measure->value (convert* (m* my-speed 5 min) 'km))
+]
+You are quite late and have only 13 minutes left before your meeting, and you are 21 miles away.
+How fast would you need to go to be there in time?
+@interaction[#:eval my-eval
+(measure->value (convert* (m/ (m* 21. mi) (m* 13 min)) '(mi (h -1))))
 ]
 
 @subsection{Basic definitions}
