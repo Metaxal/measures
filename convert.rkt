@@ -219,3 +219,19 @@
   (torr  _torr                  101325/760)
   )
 
+;;;
+;;; Power
+;;;
+
+(define-units (W watt (m* N m '(s -1)))
+  )
+
+;;;
+;;; Energy
+;;;
+
+(define-units (J joule (m* m N))
+  (cal  calorie        #e4.184)
+  (Cal  Calorie        (m* kilo cal))
+  (kWh  kilowatt-hour  (m* kilo W h))
+  )
