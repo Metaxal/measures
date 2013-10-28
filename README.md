@@ -3,7 +3,7 @@ Units and Measurements
 
 Units and measurements in Racket.
 
-First some warnings:
+First some *warnings*:
 * This collection has not been extensively tested. Use with caution and please report any error that you find at: https://github.com/Metaxal/measures/issues
 * Be cautious with non-linear converters (e.g., °F to K), as converting a temperature difference is not the same as converting a temperature.
 
@@ -26,7 +26,7 @@ A DSL unit can be:
 * a symbol alone (taking the exponent 1 by default),
 * a list with a symbol and an exponent.
 
-You can use the function `m*` (yes, the multiplication operator) to easily build measures.
+You can use the multiplication operator `m*` to easily build measures.
 
 Example:
 ```racket
@@ -49,7 +49,7 @@ The arithmetic operators automatically convert DSL measures into `measures`:
 > (m/ 3 '(2 s))
 (measure 1 1/2 (set (unit 's -1)))
 ```
-Measures can be turned back to human readable values with `measure->value':
+Measures can be turned back to human readable values with `measure->value`:
 ```racket
 > (measure->value (m* '(3 s) 5 '(10 m)))
 '(150 m s)
@@ -91,8 +91,8 @@ For example:
 > Pa
 (measure 1 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
 
-> (m* 3 N 2 Pa)
-(measure 6 (set (unit 'kg 2) (unit 's -4)))
+> (m/ (m* 3 N) (m* 2 Pa))
+(measure 1 1/2 (set (unit 'm 2)))
 
 > (m* 3 mi)
 (measure 4828 4/125 (set (unit 'm 1)))
@@ -106,8 +106,8 @@ But it is possible to avoid the implicit conversion to SI units by quoting the s
 > (m* 3 'mi)
 (measure 3 (set (unit 'mi 1)))
 ```
-(Note that quoting is nicely the same as "prevent reduction" to SI.)
-Quoted units can be useful in particular in text files from which to read numbers.
+(Note that quoting is nicely the same as "prevent reduction" to base units.)
+Quoted units can be useful in particular in text files from which to read measures.
 They can of course be used together:
 ```racket
 > (m+ '(5 mi) (m* 2 '(3 mi)))
@@ -124,7 +124,7 @@ SI units are actually quoted units:
 However, now it is not possible to add quantities of different units, even if they have the same dimension:
 ```racket
 > (m+ (m* 3 'mi) (m* 2 'm))
-../measure.rkt:111:12: Error: Measures must have the same units.
+Error: Measures must have the same units.
 Got: #<set: #(struct:unit m 1)> and #<set: #(struct:unit mi 1)>
 ```
 Known quoted  units can still be converted back to SI units:
@@ -133,12 +133,14 @@ Known quoted  units can still be converted back to SI units:
 (measure 4828 4/125 (set (unit 'm 1)))
 ```
 
-Using the `convert*` function it is also possible to request a conversion from SI units to non-SI units (or, more precisely, non-SI base units):
+Using the `convert*` function it is also possible to request a conversion from SI units to non-SI units (or, more precisely, non-SI-base units):
 ```racket
-> (convert* (m* 3 m) 'mile)
+> (convert* (m* 3 m)
+            'mile)
 (measure 125/67056 (set (unit 'mi 1)))
 
-> (convert* (m* 3 ft (m/ s)) '(mi (h -1)))
+> (convert* (m* 3 ft (m/ s))
+            '(mi (h -1)))
 (measure 2 1/22 (set (unit 'mi 1) (unit 'h -1)))
 
 > (convert* (m* 10 hecto Pa) 'mmHg)
@@ -152,10 +154,12 @@ Using the `convert*` function it is also possible to request a conversion from S
 
 It can also be used to convert to unit prefixes:
 ```racket
-(check-measure=? (convert* (m* 3 kilo Pa) '(hecto Pa))
-                 (m* 30 'Pa 'h.))
+> (measure->value (convert* (m* 3 kilo Pa) '(hecto Pa)))
+'(30.0 Pa h.)
 ```
-(prefixes are followed by a dot to avoid name collision with units.)
+Notes:
+* Prefixes are followed by a dot to avoid name collision with units.
+* The order of "units" is first by exponent then alphabetical (ASCII), this is why the `h.` is after `Pa`.
 
 The `convert*` function accepts a measure and either:
 * the `'SI` symbol (default), to convert to SI units
@@ -163,7 +167,7 @@ The `convert*` function accepts a measure and either:
 * a list of symbols and DSL units.
 
 It can then be used to convert quoted units to SI units and back to quoted units.
-This is not what we want (although it is correct):
+For example, this is not what we want (although it is correct):
 ```racket
 > (convert* (m* 3 'mi) 'yd)
 (measure 3 107/381 (set (unit 'mi 1) (unit 'm -1) (unit 'yd 1)))
