@@ -224,7 +224,8 @@ conversions](http://en.wikipedia.org/wiki/SI\_derived\_unit) can be
 found on Wikipedia (to be trusted with caution of course).
 
 This collection was partly inspired by [the Frink programming
-language](http://futureboy.us/frinkdocs/).
+language](http://futureboy.us/frinkdocs/) and Konrad Hinsen’s [Clojure
+units library](http://code.google.com/p/clj-units/).
 
 You may also be interested in [Doug Williams scientific
 collection](http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html).
