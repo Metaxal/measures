@@ -40,10 +40,7 @@ A DSL unit can be:
 
 You can use the multiplication operator `m*` to easily build measures.
 
-Example:
-
 ```racket
-Examples:                                 
 > (m* 3)                                  
 (measure 3 (set))                         
 > (m* 3 's)                               
@@ -56,7 +53,6 @@ The arithmetic operators automatically convert DSL measures into
 `measures`:
 
 ```racket
-Examples:                       
 > (m+ 2 3)                      
 (measure 5 (set))               
 > (m/ 3 '(2 s))                 
@@ -67,7 +63,6 @@ Measures can be turned back to human readable values with
 `measure->value`:
 
 ```racket
-Examples:                                 
 > (measure->value (m* '(3 s) 5 '(10 m)))  
 '(150 m s)                                
 > (measure->value (m* '(3 s) '(5 (s -1))))
@@ -78,7 +73,6 @@ Adding or subtracting measures with different units raises an
 `exn:fail:unit` exception:
 
 ```racket
-Examples:                                             
 > (measure->value (m+ '(3 m (h -1)) '(2 m h)))        
 Error: Measures must have the same units.             
 Got: #<set: #(struct:unit m 1) #(struct:unit h 1)> and
@@ -93,7 +87,6 @@ All units have a short and a long name. The short name is the standard
 symbol, and the long name is more descriptive:
 
 ```racket
-Examples:                                                         
 > mmHg                                                            
 (measure 166653/1250 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
 > millimetre-of-mercury                                           
@@ -106,7 +99,6 @@ dimension reductions when possible.
 For example:
 
 ```racket
-Examples:                                               
 > N                                                     
 (measure 1 (set (unit 'm 1) (unit 'kg 1) (unit 's -2))) 
 > Pa                                                    
@@ -123,7 +115,6 @@ But it is possible to avoid the implicit conversion to SI units by
 quoting the short name:
 
 ```racket
-Example:                      
 > (m* 3 'mi)                  
 (measure 3 (set (unit 'mi 1)))
 ```
@@ -133,7 +124,6 @@ units.) Quoted units can be useful in particular in text files from
 which to read measures. They can of course be used together:
 
 ```racket
-Example:                       
 > (m+ '(5 mi) (m* 2 '(3 mi)))  
 (measure 11 (set (unit 'mi 1)))
 ```
@@ -141,7 +131,6 @@ Example:
 SI units are actually quoted units:
 
 ```racket
-Example:                     
 > (equal? (m* 3 m (m/ 1 s s))
           (m* '(3 m (s -2))))
 #t                           
@@ -151,7 +140,6 @@ However, now it is not possible to add quantities of different units,
 even if they have the same dimension:
 
 ```racket
-Example:                                                   
 > (m+ (m* 3 'mi) (m* 2 'm))                                
 Error: Measures must have the same units.                  
 Got: #<set: #(struct:unit m 1)> and #<set: #(struct:unit mi
@@ -161,7 +149,6 @@ Got: #<set: #(struct:unit m 1)> and #<set: #(struct:unit mi
 Known quoted  units can still be converted back to SI units:
 
 ```racket
-Example:                              
 > (convert* (m* 3 'mi))               
 (measure 603504/125 (set (unit 'm 1)))
 ```
@@ -171,7 +158,6 @@ conversion from SI units to non-SI units (or, more precisely,
 non-SI-base units):
 
 ```racket
-Examples:                                              
 > (convert* (m* 3 m)                                   
             'mile)                                     
 (measure 125/67056 (set (unit 'mi 1)))                 
@@ -189,7 +175,6 @@ Examples:
 It can also be used to convert to unit prefixes:
 
 ```racket
-Example:                                                
 > (measure->value (convert* (m* 3 kilo Pa) '(hecto Pa)))
 '(30 Pa h.)                                             
 ```
@@ -214,7 +199,6 @@ quoted units. For example, this is not what we want (although it is
 correct):
 
 ```racket
-Example:                                                       
 > (convert* (m* 3 'mi) 'yd)                                    
 (measure 1250/381 (set (unit 'mi 1) (unit 'yd 1) (unit 'm -1)))
 ```
@@ -222,7 +206,6 @@ Example:
 This is what we want:
 
 ```racket
-Example:                         
 > (convert* (m* 3 'mi) '(SI yd)) 
 (measure 5280 (set (unit 'yd 1)))
 ```

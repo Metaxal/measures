@@ -41,26 +41,25 @@ A DSL unit can be:
 
 You can use the multiplication operator @racket[m*] to easily build measures.
 
-Example:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (m* 3)
 (m* 3 's)
 (m* 3 's '(m -1))
 ]
 The arithmetic operators automatically convert DSL measures into @racket[measures]:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (m+ 2 3)
 (m/ 3 '(2 s))
 ]
 Measures can be turned back to human readable values with @racket[measure->value]:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (measure->value (m* '(3 s) 5 '(10 m)))
 (measure->value (m* '(3 s) '(5 (s -1))))
 ]
 
 
 Adding or subtracting measures with different units raises an @racket[exn:fail:unit] exception:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (measure->value (m+ '(3 m (h -1)) '(2 m h)))
 
 (measure->value (m+ '(3 m (h -1)) '(2 m (h -1))))
@@ -71,7 +70,7 @@ Adding or subtracting measures with different units raises an @racket[exn:fail:u
 
 All units have a short and a long name.
 The short name is the standard symbol, and the long name is more descriptive:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 mmHg
 millimetre-of-mercury
 ]
@@ -80,7 +79,7 @@ By default, all units are converted to SI units.
 This allows to perform dimension reductions when possible.
 
 For example:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 N
 Pa
 (m/ (m* 3 N) (m* 2 Pa))
@@ -89,33 +88,33 @@ Pa
 ]
 
 But it is possible to avoid the implicit conversion to SI units by quoting the short name:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (m* 3 'mi)
 ]
 (Note that quoting is nicely the same as "prevent reduction" to base units.)
 Quoted units can be useful in particular in text files from which to read measures.
 They can of course be used together:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (m+ '(5 mi) (m* 2 '(3 mi)))
 ]
 
 SI units are actually quoted units:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (equal? (m* 3 m (m/ 1 s s))
         (m* '(3 m (s -2))))
 ]
 
 However, now it is not possible to add quantities of different units, even if they have the same dimension:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (m+ (m* 3 'mi) (m* 2 'm))
 ]
 Known quoted  units can still be converted back to SI units:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (convert* (m* 3 'mi))
 ]
 
 Using the @racket[convert*] function it is also possible to request a conversion from SI units to non-SI units (or, more precisely, non-SI-base units):
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (convert* (m* 3 m)
           'mile)
 (convert* (m* 3 ft (m/ s))
@@ -126,7 +125,7 @@ Using the @racket[convert*] function it is also possible to request a conversion
 ]
 
 It can also be used to convert to unit prefixes:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (measure->value (convert* (m* 3 kilo Pa) '(hecto Pa)))
 ]
 Notes:
@@ -144,11 +143,11 @@ The @racket[convert*] function accepts a measure and either:
 
 It can then be used to convert quoted units to SI units and back to quoted units.
 For example, this is not what we want (although it is correct):
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (convert* (m* 3 'mi) 'yd)
 ]
 This is what we want:
-@examples[#:eval my-eval
+@interaction[#:eval my-eval
 (convert* (m* 3 'mi) '(SI yd))
 ]
 
