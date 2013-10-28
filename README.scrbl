@@ -13,8 +13,10 @@ Units and measurements in Racket.
 
 First some @bold{warnings}:
 @itemize[
-@item{This collection has not been extensively tested. Use with caution and please report any error that you find at: https://github.com/Metaxal/measures/issues}
-@item{Be cautious with non-linear converters (e.g., °F to K), as converting a temperature difference is not the same as converting a temperature.}
+@item{This collection has not been extensively tested. Use with caution and please 
+      @hyperlink["https://github.com/Metaxal/measures/issues" "report any error that you find"]}
+@item{Be cautious with non-linear converters (e.g., °F to K), as converting a temperature difference
+      is not the same as converting a temperature.}
 ]
 
 @subsection{Basic definitions}
@@ -22,9 +24,11 @@ First some @bold{warnings}:
 A @racket[unit] is a symbol and an exponent.
 A @racket[measure] is a number and a set of units.
 
-Basic arithmetic operations (@racket[m+] @racket[m-] @racket[m*] @racket[m/] @racket[m^]) are defined to work with measures.
+Basic arithmetic operations (@racket[m+] @racket[m-] @racket[m*] @racket[m/] @racket[m^]) are defined
+to work with measures.
 
-To ease human interaction, measures can be written in an simple Domain Specific Language (DSL). A DSL measure can then be:
+To ease human interaction, measures can be written in an simple Domain Specific Language (DSL).
+A DSL measure can then be:
 @itemize[
 @item{a (struct) measure,}
 @item{a number,}
@@ -104,7 +108,8 @@ SI units are actually quoted units:
         (m* '(3 m (s -2))))
 ]
 
-However, now it is not possible to add quantities of different units, even if they have the same dimension:
+However, now it is not possible to add quantities of different units, even if they have the same
+dimension:
 @interaction[#:eval my-eval
 (m+ (m* 3 'mi) (m* 2 'm))
 ]
@@ -113,7 +118,8 @@ Known quoted  units can still be converted back to SI units:
 (convert* (m* 3 'mi))
 ]
 
-Using the @racket[convert*] function it is also possible to request a conversion from SI units to non-SI units (or, more precisely, non-SI-base units):
+Using the @racket[convert*] function it is also possible to request a conversion from SI units
+to non-SI units (or, more precisely, non-SI-base units):
 @interaction[#:eval my-eval
 (convert* (m* 3 m)
           'mile)
@@ -131,12 +137,13 @@ It can also be used to convert to unit prefixes:
 Notes:
 @itemize[
 @item{Prefixes are followed by a dot to avoid name collision with units.}
-@item{The order of "units" is first by exponent then alphabetical (ASCII), this is why the @racket[h.] is after @racket[Pa].}
+@item{The order of "units" is first by exponent then alphabetical (ASCII), this is why the 
+      @racket[h.] is after @racket[Pa].}
 ]
 
 The @racket[convert*] function accepts a measure and either:
 @itemize[
-@item{the @racket['SI] symbol (default), to convert to SI units}
+@item{the @racket['SI] symbol (default), to convert to SI units,}
 @item{a DSL unit,}
 @item{a list of symbols and DSL units.}
 ]
@@ -150,6 +157,10 @@ This is what we want:
 @interaction[#:eval my-eval
 (convert* (m* 3 'mi) '(SI yd))
 ]
+But of course, without quoted units, we could have written:
+@interaction[#:eval my-eval
+(convert* (m* 3 mi) 'yd)
+]
 
 @section{Related resources}
 
@@ -158,7 +169,8 @@ Some
            "useful conversions"]
 can be found on Wikipedia (to be trusted with caution of course).
 
-@hyperlink["http://futureboy.us/frinkdocs/" "The Frink programming language."]
+This collection was partly inspired by 
+@hyperlink["http://futureboy.us/frinkdocs/" "the Frink programming language"].
 
 You may also be interested in
 @hyperlink["http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html"

@@ -5,8 +5,8 @@ Units and measurements in Racket.
 First some **warnings**:
 
 * This collection has not been extensively tested. Use with caution and
-  please report any error that you find at:
-  https://github.com/Metaxal/measures/issues
+  please [report any error that you
+  find](https://github.com/Metaxal/measures/issues)
 
 * Be cautious with non-linear converters (e.g., °F to K), as converting
   a temperature difference is not the same as converting a temperature.
@@ -188,7 +188,7 @@ Notes:
 
 The `convert*` function accepts a measure and either:
 
-* the `'SI` symbol (default), to convert to SI units
+* the `'SI` symbol (default), to convert to SI units,
 
 * a DSL unit,
 
@@ -200,7 +200,7 @@ correct):
 
 ```racket
 > (convert* (m* 3 'mi) 'yd)                                    
-(measure 1250/381 (set (unit 'mi 1) (unit 'yd 1) (unit 'm -1)))
+(measure 1250/381 (set (unit 'yd 1) (unit 'mi 1) (unit 'm -1)))
 ```
 
 This is what we want:
@@ -210,13 +210,21 @@ This is what we want:
 (measure 5280 (set (unit 'yd 1)))
 ```
 
+But of course, without quoted units, we could have written:
+
+```racket
+> (convert* (m* 3 mi) 'yd)       
+(measure 5280 (set (unit 'yd 1)))
+```
+
 # 2. Related resources
 
 Some [useful
 conversions](http://en.wikipedia.org/wiki/SI\_derived\_unit) can be
 found on Wikipedia (to be trusted with caution of course).
 
-[The Frink programming language.](http://futureboy.us/frinkdocs/)
+This collection was partly inspired by [the Frink programming
+language](http://futureboy.us/frinkdocs/).
 
 You may also be interested in [Doug Williams scientific
 collection](http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html).
