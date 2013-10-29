@@ -123,9 +123,9 @@ symbol, and the long name is more descriptive:
 
 ```racket
 > mmHg                                                            
-(measure 166653/1250 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
+(measure 166653/1250 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
 > millimetre-of-mercury                                           
-(measure 166653/1250 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
+(measure 166653/1250 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
 ```
 
 By default, all units are converted to SI units. This allows to perform
@@ -135,9 +135,9 @@ For example:
 
 ```racket
 > N                                                     
-(measure 1 (set (unit 'kg 1) (unit 'm 1) (unit 's -2))) 
+(measure 1 (set (unit 'm 1) (unit 's -2) (unit 'kg 1))) 
 > Pa                                                    
-(measure 1 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
+(measure 1 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
 > (m/ (m* 3 N) (m* 2 Pa))                               
 (measure 3/2 (set (unit 'm 2)))                         
 > (m* 3 mi)                                             
@@ -202,7 +202,7 @@ non-SI-base units):
 > (convert* (m* 10 hecto Pa) 'mmHg)                    
 (measure 1250000/166653 (set (unit 'mmHg 1)))          
 > (m* 2 Pa 3 m m)                                      
-(measure 6 (set (unit 'kg 1) (unit 'm 1) (unit 's -2)))
+(measure 6 (set (unit 'm 1) (unit 's -2) (unit 'kg 1)))
 > (convert* (m* 2 Pa 3 m m) 'N)                        
 (measure 6 (set (unit 'N 1)))                          
 ```
@@ -252,7 +252,47 @@ But of course, without quoted units, we could have written:
 (measure 5280 (set (unit 'yd 1)))
 ```
 
-## 4. Related resources
+## 4. Dimensions and contracts
+
+Units and measures are organized in dimensions.
+
+For example:
+
+```racket
+(define-dimension time (s second)
+  ....                           
+  (d    day     86400)           
+  (min  minute  60)              
+  (y    year    (m* 1425/4 day)))
+```
+
+This defines a `time` dimension, a base unit `s` with a long name
+`second`, and several derived units, where a single number expresses a
+ratio with respect to the base unit, and an expression denotes a value
+to be used in place of a ratio.
+
+This also defines the `time/c` contract that can be used in function
+contracts:
+
+```racket
+> (define/contract (speed a-distance a-time)      
+    (length/c time/c . -> . velocity/c)           
+    (m/ a-distance a-time))                       
+                                                  
+> (speed (m* 5 mile) (m* 2 hour))                 
+(measure 1397/1250 (set (unit 'm 1) (unit 's -1)))
+> (speed (m* 5 mile) (m* 2 metre))                
+speed: contract violation                         
+  expected: time/c                                
+  given: (measure 2 (set (unit 'm 1)))            
+  in: the 2nd argument of                         
+      (-> length/c time/c velocity/c)             
+  contract from: (function speed)                 
+  blaming: top-level                              
+  at: eval:37.0                                   
+```
+
+## 5. Related resources
 
 Some [useful
 conversions](http://en.wikipedia.org/wiki/SI\_derived\_unit) can be
@@ -265,7 +305,7 @@ units library](http://code.google.com/p/clj-units/).
 You may also be interested in [Doug Williams scientific
 collection](http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html).
 
-## 5. License and Disclaimer
+## 6. License and Disclaimer
 
 Copyright (c) 2013 Laurent Orseau
 

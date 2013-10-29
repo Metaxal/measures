@@ -1,7 +1,8 @@
 #lang racket/base
 
 (require "measure.rkt"
-         racket/contract)
+         racket/contract
+         (for-syntax racket/base racket/syntax))
 
 (provide (all-defined-out))
 
@@ -18,6 +19,14 @@
 ;;; The two modes can be combined smoothly.
 
 ;;; This also allows to read units from files without them needing to be in SI units.
+
+;;; TODO:
+;;; - According to Konrad:
+;;; "It would be nice though if
+;;; the default units to which everything is converted were modifiable. SI
+;;; units are fine for engineering and daily life, but neither for
+;;; astrophysics nor for atomic-scale measurements."
+;;; - add many SI-derived units: http://en.wikipedia.org/wiki/SI_derived_unit
 
 ;;; Returns a measure that tries to express m1 in unit-sym^expt.
 (define/contract (convert m1 unit-sym [u-expt 1])
@@ -99,12 +108,31 @@
        (define-units-helper id-si unit-def)
        ...)]))
 
+
+(define (make-dimension-contract name m1)
+  (make-flat-contract
+   #:name name
+   #:first-order
+   (λ(m2)(measure-units-equal? m1 m2))))
+
+(define-syntax-rule (define-dimension-contract name m1)
+  (define name (make-dimension-contract 'name m1)))
+
+(define-syntax (define-dimension stx)
+  (syntax-case stx ()
+    [(_ name (base-id base-rst ...) units ...)
+     (with-syntax ([contract-name (format-id stx "~a/c" #'name)])
+       #'(begin
+           (define-units (base-id base-rst ...) units ...)
+           (define-dimension-contract contract-name base-id)
+           ))]))
+
 ;;;
 ;;; Prefixes (dimension-less)
 ;;;
 
 ;; Prefixes are suffixed by a dot to avoid collision with other unit names
-(define-units (_SI_u _SI_unity (m*))
+(define-units (one _one (m*))
   (Y.  yotta #e1e24)
   (Z.  zetta #e1e21)
   (E.  exa   #e1e18)
@@ -131,7 +159,7 @@
 ;;; Length
 ;;;
 
-(define-units (m metre)
+(define-dimension length (m metre)
   (AU  astronomical-unit  149597870700) ; Astronomical Unit. Distance from Earth to Sun.
   (km  kilometre   #e1e3)
   (dm  decimetre   #e1e-1)
@@ -152,7 +180,7 @@
 ;;; Area
 ;;;
 
-(define-units (m2 square-metre (m^ m 2))
+(define-dimension area (m2 square-metre (m^ m 2))
   (are  a        100)
   (ha   hectare  #e1e4)
   ;
@@ -166,7 +194,7 @@
 ;;; Volume
 ;;;
 
-(define-units (m3 cubic-metre (m^ m 3))
+(define-dimension volume (m3 cubic-metre (m^ m 3))
   (L  litre  #e1e-3)
   (dL  decilitre (m* deci L))
   )
@@ -176,7 +204,7 @@
 ;;; Mass
 ;;;
 
-(define-units (kg kilogram)
+(define-dimension mass (kg kilogram)
   (t   tonne      #e1e6)
   (g   gram       #e1e-3)
   (mg  milligram  #e1e-6)
@@ -189,7 +217,7 @@
 ;;; Time
 ;;;
 
-(define-units (s second)
+(define-dimension time (s second)
   (mo   month   2592000)
   (wk   week    604800)
   (h    hour    3600)
@@ -202,23 +230,22 @@
 ;;; Speed
 ;;;
 
-; speed of light
-(define c (m* 299792458 m (m/ s)))
-(define light c)
-(define lightspeed c)
-
+(define-dimension velocity (m/s meter/second (m/ m s))
+ (c  lightspeed  299792458))
 
 ;;;
 ;;; Acceleration
 ;;;
 
-(define-unit gravity standard-gravity (m* #e9.80665 (m/ m s s)))
+(define-dimension acceleration (m/s2 meter/square-second (m/ m s s))
+  (gravity standard-gravity #e9.80665)
+  )
 
 ;;;
 ;;; Force
 ;;;
 
-(define-units (N newton (m* kg m '(s -2)))
+(define-dimension force (N newton (m* kg m '(s -2)))
   (dyn  dyne         #e1e-5)
   (ozf  ounce-force  #e0.2780138509537812)
   (lbf  pound-force  #e4.4482216152605)
@@ -228,7 +255,7 @@
 ;;; Pressure
 ;;;
 
-(define-units (Pa pascal (m* N '(m -2)))
+(define-dimension pressure (Pa pascal (m* N '(m -2)))
   (atm   atmosphere             101325)
   (at    atmosphere-technical   #e9.80665e4)
   (bar   _bar                   #e1e5)
@@ -241,14 +268,14 @@
 ;;; Power
 ;;;
 
-(define-units (W watt (m* N m '(s -1)))
+(define-dimension power (W watt (m* N m '(s -1)))
   )
 
 ;;;
 ;;; Energy
 ;;;
 
-(define-units (J joule (m* m N))
+(define-dimension energy (J joule (m* m N))
   (cal  calorie        #e4.184)
   (Cal  Calorie        (m* kilo cal))
   (kWh  kilowatt-hour  (m* kilo W h))

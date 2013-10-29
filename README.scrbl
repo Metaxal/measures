@@ -5,7 +5,7 @@
 @(require scribble/eval
           (for-label racket/base racket/contract racket/string))
 @(define my-eval (make-base-eval))
-@(my-eval '(require racket/base measures))
+@(my-eval '(require racket/base racket/contract measures))
 
 @title{Units and Measurements}
 
@@ -182,6 +182,32 @@ But of course, without quoted units, we could have written:
 @interaction[#:eval my-eval
 (convert* (m* 3 mi) 'yd)
 ]
+
+@section{Dimensions and contracts}
+
+Units and measures are organized in dimensions.
+
+For example:
+@racketblock[
+(define-dimension time (s second)
+  ....
+  (d    day     86400)
+  (min  minute  60)
+  (y    year    (m* #e356.25 day))
+  )]
+This defines a @racket[time] dimension, 
+a base unit @racket[s] with a long name @racket[second], 
+and several derived units, where a single number expresses a ratio with respect to the base unit,
+and an expression denotes a value to be used in place of a ratio.
+
+This also defines the @racket[time/c] contract that can be used in function contracts:
+@interaction[ #:eval my-eval
+(define/contract (speed a-distance a-time)
+  (length/c time/c . -> . velocity/c)
+  (m/ a-distance a-time))
+(speed (m* 5 mile) (m* 2 hour))
+(speed (m* 5 mile) (m* 2 metre))]
+
 
 @section{Related resources}
 
