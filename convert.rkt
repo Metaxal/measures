@@ -17,8 +17,9 @@
 ;;; and conversion to SI units is done on request.
 ;;; To use this mode, use units by their symbol, like (m* 2 'N).
 ;;; The two modes can be combined smoothly.
-
 ;;; This also allows to read units from files without them needing to be in SI units.
+
+;;; Some useful conversions: http://en.wikipedia.org/wiki/SI_derived_unit
 
 ;;; TODO:
 ;;; - According to Konrad:
@@ -279,4 +280,14 @@
   (cal  calorie        #e4.184)
   (Cal  Calorie        (m* kilo cal))
   (kWh  kilowatt-hour  (m* kilo W h))
+  )
+
+;;;
+;;; Temperature
+;;;
+
+(define-dimension temperature (K kelvin)
+  (d°C  delta-degree-celsius     1) ; Measures the difference between two degrees
+  (d°F  delta-degree-fahrenheit  9/5)
+  (°R   degree-rankin            9/5)
   )
