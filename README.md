@@ -295,7 +295,7 @@ speed: contract violation
 ## 5. Related resources
 
 Some [useful
-conversions](http://en.wikipedia.org/wiki/SI\_derived\_unit) can be
+conversions](http://en.wikipedia.org/wiki/Conversion\_of\_units) can be
 found on Wikipedia (to be trusted with caution of course).
 
 This collection was partly inspired by [the Frink programming

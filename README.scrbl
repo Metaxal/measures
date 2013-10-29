@@ -212,7 +212,7 @@ This also defines the @racket[time/c] contract that can be used in function cont
 @section{Related resources}
 
 Some
-@hyperlink["http://en.wikipedia.org/wiki/SI_derived_unit"
+@hyperlink["http://en.wikipedia.org/wiki/Conversion_of_units"
            "useful conversions"]
 can be found on Wikipedia (to be trusted with caution of course).
 
