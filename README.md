@@ -1,6 +1,7 @@
-# 1. Units and Measurements
+Units and Measurements
 
-Units and measurements in Racket.
+Units and measurements in Racket, with conversion facilities between
+units.
 
 First some **warnings**:
 
@@ -11,7 +12,7 @@ First some **warnings**:
 * Be cautious with non-linear converters (e.g., °F to K), as converting
   a temperature difference is not the same as converting a temperature.
 
-## 1.1. Quick example
+# 1. Quick example
 
 Say you are traveling at 50 miles per hour:
 
@@ -45,7 +46,7 @@ time?
 '(96.9230769230769 mi (h -1))                                           
 ```
 
-## 1.2. Basic definitions
+# 2. Basic definitions
 
 A `unit` is a symbol and an exponent. A `measure` is a number and a set
 of units.
@@ -115,7 +116,7 @@ Got: #<set: #(struct:unit m 1) #(struct:unit h 1)> and
 '(5 m (h -1))                                         
 ```
 
-## 1.3. Units and conversions
+# 3. Units and conversions
 
 All units have a short and a long name. The short name is the standard
 symbol, and the long name is more descriptive:
@@ -251,7 +252,7 @@ But of course, without quoted units, we could have written:
 (measure 5280 (set (unit 'yd 1)))
 ```
 
-# 2. Related resources
+# 4. Related resources
 
 Some [useful
 conversions](http://en.wikipedia.org/wiki/SI\_derived\_unit) can be
@@ -263,3 +264,21 @@ units library](http://code.google.com/p/clj-units/).
 
 You may also be interested in [Doug Williams scientific
 collection](http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html).
+
+# 5. License and Disclaimer
+
+Copyright (c) 2013 Laurent Orseau
+
+Licensed under the GNU LGPL. See LICENSE.
+
+`THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS`   
+`“AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT`     
+`LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR` 
+`A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT`  
+`HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,`
+`SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT`      
+`LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,` 
+`DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY` 
+`THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT`   
+`(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE` 
+`OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.`  

@@ -156,8 +156,8 @@
   (are  a        100)
   (ha   hectare  #e1e4)
   ;
-  (sq-ft  square-foot  (m* ft ft))
-  (sq-in  square-inch  (m* in in))
+  (sq-ft  square-foot  (m^ ft 2))
+  (sq-in  square-inch  (m^ in 2))
   )
 
 ; Can be deduced from the lengths, by adding correct exponents
@@ -168,7 +168,7 @@
 
 (define-units (m3 cubic-metre (m^ m 3))
   (L  litre  #e1e-3)
-  (dL  decilitre (m/ L 10))
+  (dL  decilitre (m* deci L))
   )
 
 
@@ -194,7 +194,25 @@
   (wk   week    604800)
   (h    hour    3600)
   (d    day     86400)
-  (min  minute  60))
+  (min  minute  60)
+  (y    year    (m* #e356.25 day))
+  )
+
+;;;
+;;; Speed
+;;;
+
+; speed of light
+(define c (m* 299792458 m (m/ s)))
+(define light c)
+(define lightspeed c)
+
+
+;;;
+;;; Acceleration
+;;;
+
+(define-unit gravity standard-gravity (m* #e9.80665 (m/ m s s)))
 
 ;;;
 ;;; Force

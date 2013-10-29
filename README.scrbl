@@ -7,9 +7,9 @@
 @(define my-eval (make-base-eval))
 @(my-eval '(require racket/base measures))
 
-@section{Units and Measurements}
+@title{Units and Measurements}
 
-Units and measurements in Racket.
+Units and measurements in Racket, with conversion facilities between units.
 
 First some @bold{warnings}:
 @itemize[
@@ -19,7 +19,7 @@ First some @bold{warnings}:
       is not the same as converting a temperature.}
 ]
 
-@subsection{Quick example}
+@section{Quick example}
 
 Say you are traveling at 50 miles per hour:
 @interaction[#:eval my-eval
@@ -40,7 +40,7 @@ How fast would you need to go to be there in time?
 (measure->value (convert* (m/ (m* 21. mi) (m* 13 min)) '(mi (h -1))))
 ]
 
-@subsection{Basic definitions}
+@section{Basic definitions}
 
 A @racket[unit] is a symbol and an exponent.
 A @racket[measure] is a number and a set of units.
@@ -91,7 +91,7 @@ Adding or subtracting measures with different units raises an @racket[exn:fail:u
 ]
 
 
-@subsection{Units and conversions}
+@section{Units and conversions}
 
 All units have a short and a long name.
 The short name is the standard symbol, and the long name is more descriptive:
@@ -198,4 +198,22 @@ You may also be interested in
 @hyperlink["http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html"
            "Doug Williams scientific collection"].
 
+@section{License and Disclaimer}
 
+Copyright (c) 2013 Laurent Orseau
+
+Licensed under the GNU LGPL. See LICENSE.
+
+@verbatim{
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+}
