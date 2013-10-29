@@ -30,3 +30,9 @@
 
 (check-measure=? (convert* (m* 3 kilo Pa) '(hecto Pa))
                  (m* 30 'Pa 'h.))
+
+(define/contract (speed a-distance a-time)
+  (length/c time/c . -> . velocity/c)
+  (m/ a-distance a-time))
+(check-not-exn (λ()(speed (m* 5 mile) (m* 2 hour))))
+(check-exn exn:fail:contract? (λ()(speed (m* 5 mile) (m* 2 metre))))
