@@ -164,7 +164,7 @@ Notes:
 
 The @racket[convert*] function accepts a measure and either:
 @itemize[
-@item{the @racket['SI] symbol (default), to convert to SI units,}
+@item{the @racket['base] symbol (default), to convert to base (SI by default) units,}
 @item{a DSL unit,}
 @item{a list of symbols and DSL units.}
 ]
@@ -176,7 +176,7 @@ For example, this is not what we want (although it is correct):
 ]
 This is what we want:
 @interaction[#:eval my-eval
-(convert* (m* 3 'mi) '(SI yd))
+(convert* (m* 3 'mi) '(base yd))
 ]
 But of course, without quoted units, we could have written:
 @interaction[#:eval my-eval
