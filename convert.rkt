@@ -14,26 +14,6 @@
 (define base->id-converters (make-hash))
 (define id->base-converters (make-hash))
 
-;;; This collection offers two calculations modes.
-;;; In the first one, which is much like Frink, all calculations are made in SI (or rather, base units),
-;;; and the final conversion can be requested in any unit afterwards.
-;;; To use this mode, use units by their names, like (m* 2 N).
-;;; In the second mode, calculations can be carried out keeping the given units,
-;;; and conversion to SI units is done on request.
-;;; To use this mode, use units by their symbol, like (m* 2 'N).
-;;; The two modes can be combined smoothly.
-;;; This also allows to read units from files without them needing to be in SI units.
-
-;;; Some useful conversions: http://en.wikipedia.org/wiki/SI_derived_unit
-
-;;; TODO:
-;;; - According to Konrad:
-;;; "It would be nice though if
-;;; the default units to which everything is converted were modifiable. SI
-;;; units are fine for engineering and daily life, but neither for
-;;; astrophysics nor for atomic-scale measurements."
-;;; - add many SI-derived units: http://en.wikipedia.org/wiki/SI_derived_unit
-
 ;;; Returns a measure that tries to express m1 in unit-sym^expt.
 (define/contract (convert m1 unit-sym [u-expt 1])
   ([measure? symbol?] [exact-integer?] . ->* . measure?)
@@ -78,11 +58,19 @@
            (conv m1)))
         m1)))
 
-(define-syntax-rule (define-base-unit id id-long)
-  (begin
-    (define id (->measure 'id))
-    (define id-long id)))
+;; Defines a single unit, possibly with synonyms
+(define-syntax define-base-unit
+  (syntax-rules ()
+    [(_ id (id-long ...))
+     (begin
+       (define id (->measure 'id))
+       (define id-long id) ...)]
+    [(_ id id-long)
+     (define-base-unit id (id-long))]
+    [(_ id)
+     (define-base-unit id ())]))
 
+;; Defines a single unit with possibly several synonyms, as unit-exp
 (define-syntax define-unit 
   (syntax-rules ()
     [(_ id (id-long ...) unit-exp)

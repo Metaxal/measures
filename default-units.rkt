@@ -6,12 +6,9 @@
 
 (provide (all-defined-out))
 
-;;;
-;;; Prefixes (dimension-less)
-;;;
-
+;; Prefixes (dimension-less)
 ;; Prefixes are suffixed by a dot to avoid collision with other unit names
-(define-units (one _one (m*))
+(define-units (one () (m*))
   (Y.  yotta #e1e24)
   (Z.  zetta #e1e21)
   (E.  exa   #e1e18)
@@ -34,7 +31,6 @@
   (y.  yocto #e1e-24))
 
 (define-dimension length (m metre)
-  (AU  astronomical-unit  149597870700) ; Distance from Earth to Sun.
   (km  kilometre   #e1e3)
   (dm  decimetre   #e1e-1)
   (cm  centimetre  #e1e-2)
@@ -42,7 +38,8 @@
   (μ   micron      #e1e-6)
   (nm  nanometre   #e1e-9)
   ;
-  (Å   angstrom    #e1e-10)
+  (AU  astronomical-unit  149597870700) ; Distance from Earth to Sun.
+  (Å   angstrom           #e1e-10)
   ; English International
   ;http://en.wikipedia.org/wiki/United_States_customary_units
   (in  inch  #e0.0254)
@@ -82,7 +79,7 @@
 (define-dimension mass (kg kilogram)
   (amu atomic-mass-unit  1.6605402e-27)
   ;
-  (t   tonne      #e1e6)
+  (t   tonne      #e1e3)
   (g   gram       #e1e-3)
   (mg  milligram  #e1e-6)
   (µg  microgram  #e1e-9)
@@ -96,6 +93,56 @@
   ;
   (me electron-mass  9.1093826e-31)
   )
+
+; http://en.wikipedia.org/wiki/Density
+; http://en.wikipedia.org/wiki/Densities_of_the_elements_%28data_page%29
+; At standard conditions for temperature and pressure, 
+; that is, 273.15 K (0.00 °C) and 100 kPa (0.987 atm).
+(define-dimension density (ρ kg/m3 (m/ kg m3))
+  (g/cm3 () (m/ g (m^ cm 3)))
+  (ρ-air         air-density         1.2) ; at sea level
+  (ρ-helium      helium-density      0.179)
+  (ρ-water       water-density       1000)
+  (ρ-salt-water  salt-water-density  1030)
+  (ρ-ice         ice-density         916.7) ; below 0°C
+  ; todo: replace short names with the element's short name
+  (ρ-magnesium      magnesium-density      1740)
+  (ρ-beryllium      beryllium-density      1850)
+  (ρ-glycerol       glycerol-density       1261)
+  (ρ-silicon        silicon-density        2330)
+  (ρ-aluminium      aluminium-density      2700)
+  (ρ-diiodomethane  diiodomethane-density  3325) ; liquid at room temperature
+  (ρ-diamond        diamond-density        3500)
+  (ρ-titanium       titanium-density       4540)
+  (ρ-selenium       selenium-density       4800)
+  (ρ-vanadium       vanadium-density       6100)
+  (ρ-antimony       antimony-density       6690)
+  (ρ-zinc           zinc-density           7000)
+  (ρ-chromium       chromium-density       7200)
+  (ρ-tin            tin-density            7310)
+  (ρ-manganese      manganese-density      7325) ; approx
+  (ρ-iron           iron-density           7870)
+  (ρ-niobium        niobium-density        8570)
+  (ρ-cadmium        cadmium-density        8650)
+  (ρ-cobalt         cobalt-density         8900)
+  (ρ-nickel         nickel-density         8900)
+  (ρ-copper         copper-density         8940)
+  (ρ-bismuth        bismuth-density        9750)
+  (ρ-molybdenum     molybdenum-density     10220)
+  (ρ-silver         silver-density         10500)
+  (ρ-lead           lead-density           11340)
+  (ρ-thorium        thorium-density        11700)
+  (ρ-rhodium        rhodium-density        12410)
+  (ρ-mercury        mercury-density        13546)
+  (ρ-tantalum       tantalum-density       16600)
+  (ρ-uranium        uranium-density        18800)
+  (ρ-tungsten       tungsten-density       19300)
+  (ρ-gold           gold-density           19320)
+  (ρ-plutonium      plutonium-density      19840)
+  (ρ-platinum       platinum-density       21450)
+  (ρ-iridium        iridium-density        22420)
+  (ρ-osmium         osmium-density         22570)
+) 
 
 (define-dimension time (s second)
   (min  minute  60)
@@ -113,10 +160,16 @@
 
 (define-dimension frequency (Hz hertz (m/ s)))
 
-(define-dimension velocity (m/s meter/second (m/ m s))
- (c  light-speed  299792458))
+(define-dimension velocity (m/s metre/second (m/ m s))
+  (c light-speed 299792458)
+  (sound-speed () #e343.2) ; at 20° in dry air
+  ;
+  (km/h kilometre-per-hour (m/ km h))
+  ;
+  (mi/h mile-per-hour (m/ mi h))
+  )
 
-(define-dimension acceleration (m/s2 meter/square-second (m/ m s s))
+(define-dimension acceleration (m/s2 metre/square-second (m/ m s s))
   (gravity standard-gravity #e9.80665)
   )
 
@@ -192,7 +245,6 @@
 (define-unit h-plank  planck-constant  (m* 6.62606957e-34 J s))
 (define-unit ħ        h-bar            (m/ h (m* 2 pi)))
 
-
-(define-unit light-year (m* c year))
+(define-unit light-year   (m* c year))
 (define-unit light-second (m* c second))
 (define-unit light-minute (m* c minute))

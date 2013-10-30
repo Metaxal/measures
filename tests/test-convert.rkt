@@ -2,6 +2,7 @@
 
 (require "../measure.rkt"
          "../convert.rkt"
+         "../default-units.rkt"
          rackunit)
   
 (define (check-measure=? m1 m2 [epsilon 0.])
@@ -22,7 +23,7 @@
 (check-measure=? (convert* (m* 2 torr 4 m m) 'N)
                  (m* 20265/19 'N))
 
-(check-measure=? (convert (m* 4 dL) 'L)
+(check-measure=? (convert* (m* 4 dL) 'L)
                  (m* 2/5 'L))
 
 (check-measure=? (convert* (m* 3000 Pa) '(hecto Pa))
