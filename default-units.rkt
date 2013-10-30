@@ -43,13 +43,14 @@
   (nm  nanometre   #e1e-9)
   ;
   (Å   angstrom    #e1e-10)
-  (ly  light-year  #e9.4607304725808e15) ; light year.
   ; English International
   ;http://en.wikipedia.org/wiki/United_States_customary_units
   (in  inch  #e0.0254)
   (ft  foot  (m* 12 inch)) ; US Survey: 
   (yd  yard  (m* 3 foot))
   (mi  mile  (m* 1760 yard))
+  ;
+  (marathon () 42195)
   )
 
 (define-dimension area (m2 square-metre (m^ m 2))
@@ -63,10 +64,19 @@
   )
 
 (define-dimension volume (m3 cubic-metre (m^ m 3))
-  (L   litre       #e1e-3)
-  (dL  decilitre   (m* deci L))
-  (cL  centilitre  (m* centi L))
-  (mL  millilitre  (m* milli L))
+  (L   (l litre)        #e1e-3)
+  (dL  (dl decilitre)   (m* deci L))
+  (cL  (cl centilitre)  (m* centi L))
+  (mL  (ml millilitre)  (m* milli L))
+  ; Liquid US measures
+  (gal   gallon         (m* 231 (m^ inch 3)))
+  (qt    quart          (m/ gallon 4))
+  (pt    pint           (m/ quart 2))
+  (gi    gill           (m/ pint 4))
+  (floz  fluid-ounce    (m/ pint 16))
+  (fldr  fluid-dram     (m/ fluid-ounce 8))
+  (lbbl  liquid-barrel  (m* #e31.5 gallon))
+  (bbl   oil-barrel     (m* 42 gallon))
   )
 
 (define-dimension mass (kg kilogram)
@@ -88,12 +98,12 @@
   )
 
 (define-dimension time (s second)
-  (mo   month   2592000)
-  (wk   week    604800)
-  (h    hour    3600)
-  (d    day     86400)
   (min  minute  60)
-  (y    year    (m* #e356.25 day))
+  (h    hour    (m* 60 minute))
+  (d    day     (m* 24 hour))
+  (wk   week    (m* 7 day))
+  (mo   month   (m* 30 day))
+  (y    year    (m* #e365.25 day))
   )
 
 (define-dimension angle (rad radian (m* 1)) ; dimensionless
@@ -104,7 +114,7 @@
 (define-dimension frequency (Hz hertz (m/ s)))
 
 (define-dimension velocity (m/s meter/second (m/ m s))
- (c  lightspeed  299792458))
+ (c  light-speed  299792458))
 
 (define-dimension acceleration (m/s2 meter/square-second (m/ m s s))
   (gravity standard-gravity #e9.80665)
@@ -119,11 +129,11 @@
 (define-dimension pressure (Pa pascal (m* N '(m -2)))
   (atm   atmosphere             101325)
   (at    atmosphere-technical   #e9.80665e4)
-  (bar   _bar                   #e1e5)
+  (bar   ()                     #e1e5)
   (mbar  millibar               100)
   (mmHg  millimetre-of-mercury  #e133.3224) ; approximately
   (cmHg  centimetre-of-mercury  #e1333.224) ; approximately
-  (torr  _torr                  101325/760)
+  (torr  ()                     101325/760)
   )
 
 (define-dimension power (W watt (m* N m '(s -1)))
@@ -179,5 +189,10 @@
   (°R   degree-rankin            9/5)
   )
 
-(define-unit h-plank planck-constant (m* 6.62606957e-34 J s))
-(define-unit ħ h-bar (m/ h (m* 2 pi)))
+(define-unit h-plank  planck-constant  (m* 6.62606957e-34 J s))
+(define-unit ħ        h-bar            (m/ h (m* 2 pi)))
+
+
+(define-unit light-year (m* c year))
+(define-unit light-second (m* c second))
+(define-unit light-minute (m* c minute))
