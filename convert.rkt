@@ -2,15 +2,16 @@
 
 (require "measure.rkt"
          racket/contract
+         racket/math
          (for-syntax racket/base racket/syntax))
 
 (provide (all-defined-out))
 
-(define si->id-converters (make-hash))
-(define id->si-converters (make-hash))
+(define base->id-converters (make-hash))
+(define id->base-converters (make-hash))
 
 ;;; This collection offers two calculations modes.
-;;; In the first one, which is much like Frink, all calculations are made in SI,
+;;; In the first one, which is much like Frink, all calculations are made in SI (or rather, base units),
 ;;; and the final conversion can be requested in any unit afterwards.
 ;;; To use this mode, use units by their names, like (m* 2 N).
 ;;; In the second mode, calculations can be carried out keeping the given units,
@@ -32,7 +33,7 @@
 ;;; Returns a measure that tries to express m1 in unit-sym^expt.
 (define/contract (convert m1 unit-sym [u-expt 1])
   ([measure? symbol?] [exact-integer?] . ->* . measure?)
-  (define conv (hash-ref si->id-converters unit-sym #f))
+  (define conv (hash-ref base->id-converters unit-sym #f))
   (define m-expt (measure-find-unit-expt m1 unit-sym))
   (define d-expt (- u-expt m-expt))
   (cond [(or (= d-expt 0) (not conv))
@@ -46,12 +47,12 @@
             (conv m)))]))
 
 ;;; Converts m1 to all unit-syms (can be either a dsl-unit or a list of dsl-units).
-;;; If unit-syms is 'SI, convert m1 to SI units.
-(define/contract (convert* m1 [unit-syms 'SI])
+;;; If unit-syms is 'base, convert m1 to base units.
+(define/contract (convert* m1 [unit-syms 'base])
   ([dsl-measure/c] [(or/c symbol? dsl-unit/c 
                           (listof (or/c symbol? dsl-unit/c)))] . ->* . measure?)
-  (cond [(eq? unit-syms 'SI)
-         (measure->si m1)]
+  (cond [(eq? unit-syms 'base)
+         (measure->base m1)]
         [(dsl-unit/c unit-syms)
          (define u (->unit unit-syms))
          (convert (->measure m1)  (unit-symbol u) (unit-expt u))]
@@ -60,11 +61,11 @@
            (convert* m1 u))]))
 
 ;; if unit-sym is #f, all units are converted.
-(define (measure->si m1 [unit-sym #f])
+(define (measure->base m1 [unit-sym #f])
   (for/fold ([m1 m1]) ([u (measure-units m1)])
     (define n (unit-expt u))
     (define sym (unit-symbol u))
-    (define conv (hash-ref id->si-converters sym #f))
+    (define conv (hash-ref id->base-converters sym #f))
     (if (and (not (zero? n)) 
              conv
              (or (not unit-sym) (eq? unit-sym sym)))
@@ -73,7 +74,7 @@
            (conv m1)))
         m1)))
 
-(define-syntax-rule (define-si-unit id id-long)
+(define-syntax-rule (define-base-unit id id-long)
   (begin
     (define id (->measure 'id))
     (define id-long id)))
@@ -82,31 +83,31 @@
   (begin
     (define id unit-exp)
     (define id-long id)
-    (let ([si->id (λ(m)(m* m 'id (m/ id)))]
-          [id->si (λ(m)(m* m id '(id -1)))])
-      (hash-set! si->id-converters 'id si->id)
-      (hash-set! si->id-converters 'id-long si->id)
-      (hash-set! id->si-converters 'id id->si)
-      (hash-set! id->si-converters 'id-log id->si))))
+    (let ([base->id (λ(m)(m* m 'id (m/ id)))]
+          [id->base (λ(m)(m* m id '(id -1)))])
+      (hash-set! base->id-converters 'id base->id)
+      (hash-set! base->id-converters 'id-long base->id)
+      (hash-set! id->base-converters 'id id->base)
+      (hash-set! id->base-converters 'id-long id->base))))
 
 (define-syntax define-units-helper
   (syntax-rules ()
-    [(_ id-si (id id-long (expr ...)))
+    [(_ id-base (id id-long (expr ...)))
      (define-unit id id-long (expr ...))]
-    [(_ id-si (id id-long ratio))
-     (define-unit id id-long (m* ratio id-si))]))
+    [(_ id-base (id id-long ratio))
+     (define-unit id id-long (m* ratio id-base))]))
 
 (define-syntax define-units
   (syntax-rules ()
-    [(_ (id-si id-si-long) unit-def ...)
+    [(_ (id-base id-base-long) unit-def ...)
      (begin 
-       (define-si-unit id-si id-si-long)
-       (define-units-helper id-si unit-def)
+       (define-base-unit id-base id-base-long)
+       (define-units-helper id-base unit-def)
        ...)]
-    [(_ (id-si id-si-long unit-exp) unit-def ...)
+    [(_ (id-base id-base-long unit-exp) unit-def ...)
      (begin 
-       (define-unit id-si id-si-long unit-exp)
-       (define-units-helper id-si unit-def)
+       (define-unit id-base id-base-long unit-exp)
+       (define-units-helper id-base unit-def)
        ...)]))
 
 
@@ -161,7 +162,7 @@
 ;;;
 
 (define-dimension length (m metre)
-  (AU  astronomical-unit  149597870700) ; Astronomical Unit. Distance from Earth to Sun.
+  (AU  astronomical-unit  149597870700) ; Distance from Earth to Sun.
   (km  kilometre   #e1e3)
   (dm  decimetre   #e1e-1)
   (cm  centimetre  #e1e-2)
@@ -291,3 +292,11 @@
   (d°F  delta-degree-fahrenheit  9/5)
   (°R   degree-rankin            9/5)
   )
+
+;;;
+;;; Angle
+;;;
+
+(define-dimension angle (rad radian (m* 1)) ; dimensionless
+  (° degree (m/ pi 180)))
+
