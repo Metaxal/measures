@@ -39,20 +39,24 @@
   (dm  decimetre   #e1e-1)
   (cm  centimetre  #e1e-2)
   (mm  millimetre  #e1e-3)
-  (μm  micron      #e1e-6) ; instead of μ because μ is used as a quantity, 10^-3
+  (μ   micron      #e1e-6)
   (nm  nanometre   #e1e-9)
   ;
   (Å   angstrom    #e1e-10)
   (ly  light-year  #e9.4607304725808e15) ; light year.
-  ;
-  (mi  mile  #e1609.344)
-  (yd  yard  #e0.9144)
-  (ft  foot  #e0.3048)
-  (in  inch  #e0.0254))
+  ; English International
+  ;http://en.wikipedia.org/wiki/United_States_customary_units
+  (in  inch  #e0.0254)
+  (ft  foot  (m* 12 inch)) ; US Survey: 
+  (yd  yard  (m* 3 foot))
+  (mi  mile  (m* 1760 yard))
+  )
 
 (define-dimension area (m2 square-metre (m^ m 2))
   (are  a        100)
   (ha   hectare  #e1e4)
+  ;
+  (b  barn #e1e-28)
   ;
   (sq-ft  square-foot  (m^ ft 2))
   (sq-in  square-inch  (m^ in 2))
@@ -66,12 +70,21 @@
   )
 
 (define-dimension mass (kg kilogram)
+  (amu atomic-mass-unit  1.6605402e-27)
+  ;
   (t   tonne      #e1e6)
   (g   gram       #e1e-3)
   (mg  milligram  #e1e-6)
+  (µg  microgram  #e1e-9)
+  ; Avoirdupoids
+  (lb   pound          #e0.45359237)
+  (gr   grain          (m/ pound 7000))
+  (oz   ounce          (m/ pound 16))
+  (dr   dram           (m/ ounce 16))
+  (cwt  hundredweight  (m* 100 pound)) ; US
+  (ton  short-ton      (m* 2000 pound))
   ;
-  (lb  pound  #e0.45359237)
-  (oz  ounce  #e0.028)
+  (me electron-mass  9.1093826e-31)
   )
 
 (define-dimension time (s second)
@@ -107,6 +120,7 @@
   (atm   atmosphere             101325)
   (at    atmosphere-technical   #e9.80665e4)
   (bar   _bar                   #e1e5)
+  (mbar  millibar               100)
   (mmHg  millimetre-of-mercury  #e133.3224) ; approximately
   (cmHg  centimetre-of-mercury  #e1333.224) ; approximately
   (torr  _torr                  101325/760)
@@ -119,6 +133,10 @@
   (cal  calorie        #e4.184)
   (Cal  Calorie        (m* kilo cal))
   (kWh  kilowatt-hour  (m* kilo W h))
+  ;
+  (eV   electronvolt       1.602176565e-19)
+  (meV  millielectronvolt  (m* milli electronvolt))
+  (μeV  microelectronvolt  (m* micro electronvolt))
   )
 
 (define-dimension electric-current (A ampere))
@@ -161,3 +179,5 @@
   (°R   degree-rankin            9/5)
   )
 
+(define-unit h-plank planck-constant (m* 6.62606957e-34 J s))
+(define-unit ħ h-bar (m/ h (m* 2 pi)))

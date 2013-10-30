@@ -6,6 +6,7 @@
 
 (provide convert*
          make-dimension-contract
+         define-unit
          define-units
          define-dimension-contract
          define-dimension)
