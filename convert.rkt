@@ -83,16 +83,22 @@
     (define id (->measure 'id))
     (define id-long id)))
 
-(define-syntax-rule (define-unit id id-long unit-exp)
-  (begin
-    (define id unit-exp)
-    (define id-long id)
-    (let ([base->id (λ(m)(m* m 'id (m/ id)))]
-          [id->base (λ(m)(m* m id '(id -1)))])
-      (hash-set! base->id-converters 'id base->id)
-      (hash-set! base->id-converters 'id-long base->id)
-      (hash-set! id->base-converters 'id id->base)
-      (hash-set! id->base-converters 'id-long id->base))))
+(define-syntax define-unit 
+  (syntax-rules ()
+    [(_ id (id-long ...) unit-exp)
+     (begin
+       (define id unit-exp)
+       (define id-long id) ...
+       (let ([base->id (λ(m)(m* m 'id (m/ id)))]
+             [id->base (λ(m)(m* m id '(id -1)))])
+         (hash-set! base->id-converters 'id base->id)
+         (hash-set! id->base-converters 'id id->base)
+         (hash-set! base->id-converters 'id-long base->id) ...
+         (hash-set! id->base-converters 'id-long id->base) ...))]
+    [(_ id id-long unit-exp)
+     (define-unit id (id-long) unit-exp)]
+    [(_ id unit-exp)
+     (define-unit id () unit-exp)]))
 
 (define-syntax define-units-helper
   (syntax-rules ()
