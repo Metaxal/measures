@@ -25,7 +25,7 @@
          measure-offset
          measure-inverse
          measure-find-unit-expt
-         mzero? m+ m- m* m/ m^
+         mzero? m+ m- m* m/ m^ m< m> m<= m>= m=
          measure->value
          ->unit ->measure
          dsl-unit/c dsl-measure/c
@@ -99,16 +99,19 @@
   (measure (+ (measure-quantity m1) offset)
            (measure-units m1)))
 
-;; Adds m1 and m2's quantity.
-;; m1 and m2 must have the same units.
-(define/contract (measure-add m1 m2)
-  (measure? measure? . -> . measure?)
+(define (check-units m1 m2)
   (unless (measure-units-equal? m1 m2)
     (raise (exn:fail:unit
             (format "Error: Measures must have the same units.\nGot: ~a and ~a"
                     (measure-units m1)
                     (measure-units m2))
-            (current-continuation-marks))))
+            (current-continuation-marks)))))
+
+;; Adds m1 and m2's quantity.
+;; m1 and m2 must have the same units.
+(define/contract (measure-add m1 m2)
+  (measure? measure? . -> . measure?)
+  (check-units m1 m2)
   (measure-offset m1 (measure-quantity m2)))
 
 (define/contract (measure-opposite v)
@@ -160,14 +163,30 @@
            (list->set (set-map (measure-units m1)
                                (λ(u)(unit (unit-symbol u) (* exp (unit-expt u))))))))
 
+(define-syntax-rule (define-measure-cmp (name op) ...)
+  (begin
+    (define/contract (name m1 m2)
+      (measure? measure? . -> . boolean?)
+      (check-units m1 m2)
+      (op (measure-quantity m1) (measure-quantity m2)))
+    ...))
+
+(define-measure-cmp 
+  (measure< <)
+  (measure> >)
+  (measure<= <=)
+  (measure>= >=)
+  (measure= =))
+
 ;; Tests
 
 (module+ test
   (require rackunit)
-  (define meter (unit 'm 1))
+  (define metre (unit 'm 1))
   (define second (unit 's 1))
-  (define m1 (measure 4 (set meter)))
+  (define m1 (measure 4 (set metre)))
   (define m2 (measure 3 (set second)))
+  (define m3 (measure 10 (set metre)))
   
   (check-equal? (measure-add m1 m1)
                 (measure 8 (set (unit 'm 1))))
@@ -183,6 +202,10 @@
   
   (check-equal? (measure-expt m1 2)
                 (measure 16 (set (unit 'm 2))))
+  
+  (check-exn exn:fail:unit?
+             (λ()(measure< m1 m2)))
+  (check-true (measure< m1 m3))
   )
 
 ;;;
@@ -246,6 +269,14 @@
 (define (m^ m1 exp)
   (measure-expt (->measure m1) exp))
 
+(define-values
+  (m< m> m<= m>= m=)
+  (apply values
+         (for/list ([op (list measure< measure> measure<= measure>= measure=)])
+           (λ ml (let ([ml (map ->measure ml)])
+                   (for/and ([m1 ml] [m2 (rest ml)])
+                     (op m1 m2)))))))
+
 (module+ test
   (check-equal? (m* '(3 s) '(360 m (s -1)))
                 (measure 1080 (set (unit 'm 1))))
@@ -261,6 +292,13 @@
   
   (check-equal? (m- '(23 s) '(2 s) '(10 s))
                 (m* '(11 s)))
+  
+  (check-true (m< -5 1 2 4 7 10))
+  (check-true (m> 3 2 -4))
+  (check-false (m> 3 4 -4))
+  (check-true (m>= 3 2 2))
+  (check-true (m= 2 '(2)))
+  (check-exn exn:fail:unit? (λ()(m= 3 '(3 s))))
   )
 
 ;;;
