@@ -1,4 +1,4 @@
-# Units and Measurements
+Units and Measurements
 
 Units and measurements in Racket, with conversion facilities between
 units.
@@ -12,7 +12,7 @@ First some **warnings**:
 * Be cautious with non-linear converters (e.g., °F to K), as converting
   a temperature difference is not the same as converting a temperature.
 
-## 1. Quick example
+# 1. Quick example
 
 Say you are traveling at 50 miles per hour:
 
@@ -46,7 +46,7 @@ time?
 '(96.9230769230769 mi (h -1))                                           
 ```
 
-## 2. Basic definitions
+# 2. Basic definitions
 
 A `unit` is a symbol and an exponent. A `measure` is a number and a set
 of units.
@@ -116,16 +116,16 @@ Got: #<set: #(struct:unit m 1) #(struct:unit h 1)> and
 '(5 m (h -1))                                         
 ```
 
-## 3. Units and conversions
+# 3. Units and conversions
 
 All units have a short and a long name. The short name is the standard
 symbol, and the long name is more descriptive:
 
 ```racket
 > mmHg                                                            
-(measure 166653/1250 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
+(measure 166653/1250 (set (unit 'kg 1) (unit 'm -1) (unit 's -2)))
 > millimetre-of-mercury                                           
-(measure 166653/1250 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
+(measure 166653/1250 (set (unit 'kg 1) (unit 'm -1) (unit 's -2)))
 ```
 
 By default, all units are converted to SI units. This allows to perform
@@ -135,9 +135,9 @@ For example:
 
 ```racket
 > N                                                     
-(measure 1 (set (unit 'm 1) (unit 's -2) (unit 'kg 1))) 
+(measure 1 (set (unit 'm 1) (unit 'kg 1) (unit 's -2))) 
 > Pa                                                    
-(measure 1 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
+(measure 1 (set (unit 'kg 1) (unit 'm -1) (unit 's -2)))
 > (m/ (m* 3 N) (m* 2 Pa))                               
 (measure 3/2 (set (unit 'm 2)))                         
 > (m* 3 mi)                                             
@@ -202,7 +202,7 @@ non-SI-base units):
 > (convert* (m* 10 hecto Pa) 'mmHg)                    
 (measure 1250000/166653 (set (unit 'mmHg 1)))          
 > (m* 2 Pa 3 m m)                                      
-(measure 6 (set (unit 'm 1) (unit 's -2) (unit 'kg 1)))
+(measure 6 (set (unit 'm 1) (unit 'kg 1) (unit 's -2)))
 > (convert* (m* 2 Pa 3 m m) 'N)                        
 (measure 6 (set (unit 'N 1)))                          
 ```
@@ -223,7 +223,8 @@ Notes:
 
 The `convert*` function accepts a measure and either:
 
-* the `'SI` symbol (default), to convert to SI units,
+* the `'base` symbol (default), to convert to base (SI by default)
+  units,
 
 * a DSL unit,
 
@@ -235,14 +236,14 @@ correct):
 
 ```racket
 > (convert* (m* 3 'mi) 'yd)                                    
-(measure 1250/381 (set (unit 'mi 1) (unit 'yd 1) (unit 'm -1)))
+(measure 1250/381 (set (unit 'yd 1) (unit 'mi 1) (unit 'm -1)))
 ```
 
 This is what we want:
 
 ```racket
-> (convert* (m* 3 'mi) '(SI yd)) 
-(measure 5280 (set (unit 'yd 1)))
+> (convert* (m* 3 'mi) '(base yd))
+(measure 5280 (set (unit 'yd 1))) 
 ```
 
 But of course, without quoted units, we could have written:
@@ -252,7 +253,7 @@ But of course, without quoted units, we could have written:
 (measure 5280 (set (unit 'yd 1)))
 ```
 
-## 4. Dimensions and contracts
+# 4. Dimensions and contracts
 
 Units and measures are organized in dimensions.
 
@@ -292,7 +293,36 @@ speed: contract violation
   at: eval:37.0                                   
 ```
 
-## 5. Related resources
+# 5. Chemical elements
+
+The `measures/chemical-elements` provides the vector `elements` of the
+118 elements with a number of procedures to extract their information:
+`atomic-number` `atomic-symbol` `chemical-element` `group` `period`
+`atomic-weight` `density` `melting-point` `boiling-point`
+`heat-capacity` `electronegativity` `abundance`.
+
+Each procedure accepts either a number (the atomic number) or a symbol
+(either the atomic symbol or the name of the chemical element).
+
+```racket
+Examples:                                       
+> (require measures/chemical-elements)          
+                                                
+> (atomic-number 'Oxygen)                       
+8                                               
+> (atomic-symbol 'Iron)                         
+'Fe                                             
+> (atomic-symbol 2)                             
+'He                                             
+> (chemical-element 'Na)                        
+'Sodium                                         
+> (atomic-weight 'Carbon)                       
+(measure 1.99447483422e-26 (set (unit 'kg 1)))  
+> (m* 3 cl (density 'Mercury))                  
+(measure 0.40600800000000004 (set (unit 'kg 1)))
+```
+
+# 6. Related resources
 
 Some [useful
 conversions](http://en.wikipedia.org/wiki/Conversion\_of\_units) can be
@@ -305,7 +335,7 @@ units library](http://code.google.com/p/clj-units/).
 You may also be interested in [Doug Williams scientific
 collection](http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html).
 
-## 6. License and Disclaimer
+# 7. License and Disclaimer
 
 Copyright (c) 2013 Laurent Orseau
 

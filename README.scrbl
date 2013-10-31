@@ -208,6 +208,27 @@ This also defines the @racket[time/c] contract that can be used in function cont
 (speed (m* 5 mile) (m* 2 hour))
 (speed (m* 5 mile) (m* 2 metre))]
 
+@section{Chemical elements}
+
+The @racket[measures/chemical-elements] provides the vector @racket[elements]
+of the 118 elements with a number of procedures to extract their information:
+@racket[atomic-number] @racket[atomic-symbol] @racket[chemical-element] @racket[group] @racket[period]
+@racket[atomic-weight] @racket[density] @racket[melting-point] @racket[boiling-point]
+@racket[heat-capacity] @racket[electronegativity]
+@racket[abundance].
+
+Each procedure accepts either a number (the atomic number) or a symbol (either the 
+atomic symbol or the name of the chemical element).
+
+@examples[ #:eval my-eval
+(require measures/chemical-elements)
+(atomic-number 'Oxygen)
+(atomic-symbol 'Iron)
+(atomic-symbol 2)
+(chemical-element 'Na)
+(atomic-weight 'Carbon)
+(m* 3 cl (density 'Mercury))]
+
 
 @section{Related resources}
 
