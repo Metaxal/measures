@@ -100,48 +100,13 @@
 ; that is, 273.15 K (0.00 °C) and 100 kPa (0.987 atm).
 (define-dimension density (ρ kg/m3 (m/ kg m3))
   (g/cm3 () (m/ g (m^ cm 3)))
+  ;
   (ρ-air         air-density         1.2) ; at sea level
   (ρ-helium      helium-density      0.179)
   (ρ-water       water-density       1000)
   (ρ-salt-water  salt-water-density  1030)
   (ρ-ice         ice-density         916.7) ; below 0°C
-  ; todo: replace short names with the element's short name
-  (ρ-magnesium      magnesium-density      1740)
-  (ρ-beryllium      beryllium-density      1850)
-  (ρ-glycerol       glycerol-density       1261)
-  (ρ-silicon        silicon-density        2330)
-  (ρ-aluminium      aluminium-density      2700)
-  (ρ-diiodomethane  diiodomethane-density  3325) ; liquid at room temperature
-  (ρ-diamond        diamond-density        3500)
-  (ρ-titanium       titanium-density       4540)
-  (ρ-selenium       selenium-density       4800)
-  (ρ-vanadium       vanadium-density       6100)
-  (ρ-antimony       antimony-density       6690)
-  (ρ-zinc           zinc-density           7000)
-  (ρ-chromium       chromium-density       7200)
-  (ρ-tin            tin-density            7310)
-  (ρ-manganese      manganese-density      7325) ; approx
-  (ρ-iron           iron-density           7870)
-  (ρ-niobium        niobium-density        8570)
-  (ρ-cadmium        cadmium-density        8650)
-  (ρ-cobalt         cobalt-density         8900)
-  (ρ-nickel         nickel-density         8900)
-  (ρ-copper         copper-density         8940)
-  (ρ-bismuth        bismuth-density        9750)
-  (ρ-molybdenum     molybdenum-density     10220)
-  (ρ-silver         silver-density         10500)
-  (ρ-lead           lead-density           11340)
-  (ρ-thorium        thorium-density        11700)
-  (ρ-rhodium        rhodium-density        12410)
-  (ρ-mercury        mercury-density        13546)
-  (ρ-tantalum       tantalum-density       16600)
-  (ρ-uranium        uranium-density        18800)
-  (ρ-tungsten       tungsten-density       19300)
-  (ρ-gold           gold-density           19320)
-  (ρ-plutonium      plutonium-density      19840)
-  (ρ-platinum       platinum-density       21450)
-  (ρ-iridium        iridium-density        22420)
-  (ρ-osmium         osmium-density         22570)
+  ; See chemical-elements for more values
 ) 
 
 (define-dimension time (s second)
