@@ -1,4 +1,4 @@
-Units and Measurements
+# Units and Measurements
 
 Units and measurements in Racket, with conversion facilities between
 units.
@@ -12,7 +12,7 @@ First some **warnings**:
 * Be cautious with non-linear converters (e.g., °F to K), as converting
   a temperature difference is not the same as converting a temperature.
 
-# 1. Quick example
+## 1. Quick example
 
 Say you are traveling at 50 miles per hour:
 
@@ -46,7 +46,7 @@ time?
 '(96.9230769230769 mi (h -1))                                           
 ```
 
-# 2. Basic definitions
+## 2. Basic definitions
 
 A `unit` is a symbol and an exponent. A `measure` is a number and a set
 of units.
@@ -116,7 +116,7 @@ Got: #<set: #(struct:unit m 1) #(struct:unit h 1)> and
 '(5 m (h -1))                                         
 ```
 
-# 3. Units and conversions
+## 3. Units and conversions
 
 All units have a short and a long name. The short name is the standard
 symbol, and the long name is more descriptive:
@@ -135,7 +135,7 @@ For example:
 
 ```racket
 > N                                                     
-(measure 1 (set (unit 'm 1) (unit 'kg 1) (unit 's -2))) 
+(measure 1 (set (unit 'kg 1) (unit 'm 1) (unit 's -2))) 
 > Pa                                                    
 (measure 1 (set (unit 'kg 1) (unit 'm -1) (unit 's -2)))
 > (m/ (m* 3 N) (m* 2 Pa))                               
@@ -202,7 +202,7 @@ non-SI-base units):
 > (convert* (m* 10 hecto Pa) 'mmHg)                    
 (measure 1250000/166653 (set (unit 'mmHg 1)))          
 > (m* 2 Pa 3 m m)                                      
-(measure 6 (set (unit 'm 1) (unit 'kg 1) (unit 's -2)))
+(measure 6 (set (unit 'kg 1) (unit 'm 1) (unit 's -2)))
 > (convert* (m* 2 Pa 3 m m) 'N)                        
 (measure 6 (set (unit 'N 1)))                          
 ```
@@ -253,7 +253,7 @@ But of course, without quoted units, we could have written:
 (measure 5280 (set (unit 'yd 1)))
 ```
 
-# 4. Dimensions and contracts
+## 4. Dimensions and contracts
 
 Units and measures are organized in dimensions.
 
@@ -293,7 +293,7 @@ speed: contract violation
   at: eval:37.0                                   
 ```
 
-# 5. Chemical elements
+## 5. Chemical elements
 
 The `measures/chemical-elements` provides the vector `elements` of the
 118 elements with a number of procedures to extract their information:
@@ -322,7 +322,7 @@ Examples:
 (measure 0.40600800000000004 (set (unit 'kg 1)))
 ```
 
-# 6. Related resources
+## 6. Related resources
 
 Some [useful
 conversions](http://en.wikipedia.org/wiki/Conversion\_of\_units) can be
@@ -335,7 +335,7 @@ units library](http://code.google.com/p/clj-units/).
 You may also be interested in [Doug Williams scientific
 collection](http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html).
 
-# 7. License and Disclaimer
+## 7. License and Disclaimer
 
 Copyright (c) 2013 Laurent Orseau
 
