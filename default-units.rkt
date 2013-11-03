@@ -43,11 +43,12 @@
   ; English International
   ;http://en.wikipedia.org/wiki/United_States_customary_units
   (in  inch  #e0.0254)
-  (ft  foot  (m* 12 inch)) ; US Survey: 
+  (ft  foot  (m* 12 inch)) ; US Survey
   (yd  yard  (m* 3 foot))
   (mi  mile  (m* 1760 yard))
   ;
   (marathon () 42195)
+  (semi-marathon () (m/ marathon 2))
   )
 
 (define-dimension area (m2 square-metre (m^ m 2))
@@ -207,9 +208,30 @@
   (°R   degree-rankin            9/5)
   )
 
+; http://en.wikipedia.org/wiki/Conversion_of_units_of_temperature
+(define (kelvin->celsius m)
+  (m- m 273.15))
+(define (celsius->kelvin c)
+  (m+ m 273.15))
+(define (kelvin->fahrenheit m)
+  (m- (m* m 9/5) 459.67))
+(define (fahrenheit->kelvin m)
+  (m* (m+ m 459.67) 5/9))
+
 (define-unit h-plank  planck-constant  (m* 6.62606957e-34 J s))
 (define-unit ħ        h-bar            (m/ h (m* 2 pi)))
 
 (define-unit light-year   (m* c year))
 (define-unit light-second (m* c second))
 (define-unit light-minute (m* c minute))
+
+;; http://en.wikipedia.org/wiki/Bicycle_performance#Energy_efficiency
+; A 80kg person walking for 3km uses (convert* (m* 80 kg 3 km walking-energy) 'Cal) kilo calories
+(define walking-energy (m* 3.78 kilo J (m/ 1 km kg)))
+(define running-energy walking-energy)
+(define cycling-energy (m* 1.62 kilo J (m/ 1 km kg)))
+(define swimming-energy (m* 16.96 kilo J (m/ 1 km kg)))
+; Energy required to lift 10kg for 2 m high: (convert* (m* lifting-energy 2 m 10 kg) 'J)
+(define lifting-energy gravity) ; 
+
+
