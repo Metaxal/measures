@@ -28,16 +28,16 @@ Say you are traveling at 50 miles per hour:
 ]
 How many kilometers/hour is that?
 @interaction[#:eval my-eval
-(measure->value (convert* my-speed '(km (h -1))))
+(measure->value (convert my-speed '(km (h -1))))
 ]
 How many kilometers do you travel during 5 minutes?
 @interaction[#:eval my-eval
-(measure->value (convert* (m* my-speed 5 min) 'km))
+(measure->value (convert (m* my-speed 5 min) 'km))
 ]
 You are quite late and have only 13 minutes left before your meeting, and you are 21 miles away.
 How fast would you need to go to be there in time?
 @interaction[#:eval my-eval
-(measure->value (convert* (m/ (m* 21. mi) (m* 13 min)) '(mi (h -1))))
+(measure->value (convert (m/ (m* 21. mi) (m* 13 min)) '(mi (h -1))))
 ]
 
 @section{Basic definitions}
@@ -136,24 +136,24 @@ dimension:
 ]
 Known quoted  units can still be converted back to SI units:
 @interaction[#:eval my-eval
-(convert* (m* 3 'mi))
+(convert (m* 3 'mi))
 ]
 
-Using the @racket[convert*] function it is also possible to request a conversion from SI units
+Using the @racket[convert] function it is also possible to request a conversion from SI units
 to non-SI units (or, more precisely, non-SI-base units):
 @interaction[#:eval my-eval
-(convert* (m* 3 m)
+(convert (m* 3 m)
           'mile)
-(convert* (m* 3 ft (m/ s))
+(convert (m* 3 ft (m/ s))
           '(mi (h -1)))
-(convert* (m* 10 hecto Pa) 'mmHg)
+(convert (m* 10 hecto Pa) 'mmHg)
 (m* 2 Pa 3 m m)
-(convert* (m* 2 Pa 3 m m) 'N)
+(convert (m* 2 Pa 3 m m) 'N)
 ]
 
 It can also be used to convert to unit prefixes:
 @interaction[#:eval my-eval
-(measure->value (convert* (m* 3 kilo Pa) '(hecto Pa)))
+(measure->value (convert (m* 3 kilo Pa) '(hecto Pa)))
 ]
 Notes:
 @itemize[
@@ -162,7 +162,7 @@ Notes:
       @racket[h.] is after @racket[Pa].}
 ]
 
-The @racket[convert*] function accepts a measure and either:
+The @racket[convert] function accepts a measure and either:
 @itemize[
 @item{the @racket['base] symbol (default), to convert to base (SI by default) units,}
 @item{a DSL unit,}
@@ -172,15 +172,15 @@ The @racket[convert*] function accepts a measure and either:
 It can then be used to convert quoted units to SI units and back to quoted units.
 For example, this is not what we want (although it is correct):
 @interaction[#:eval my-eval
-(convert* (m* 3 'mi) 'yd)
+(convert (m* 3 'mi) 'yd)
 ]
 This is what we want:
 @interaction[#:eval my-eval
-(convert* (m* 3 'mi) '(base yd))
+(convert (m* 3 'mi) '(base yd))
 ]
 But of course, without quoted units, we could have written:
 @interaction[#:eval my-eval
-(convert* (m* 3 mi) 'yd)
+(convert (m* 3 mi) 'yd)
 ]
 
 @section{Dimensions and contracts}

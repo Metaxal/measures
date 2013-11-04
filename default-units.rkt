@@ -135,8 +135,17 @@
   (mi/h mile-per-hour (m/ mi h))
   )
 
+; 1 m/s2 = 1 J/(m×kg)s
 (define-dimension acceleration (m/s2 metre/square-second (m/ m s s))
   (gravity standard-gravity #e9.80665)
+  ;; http://en.wikipedia.org/wiki/Bicycle_performance#Energy_efficiency
+  ; A 80kg person walking for 3km uses (convert* (m* 80 kg 3 km walking-acc) 'Cal) kilo calories
+  (walking-acc () 3.78) ; m/s2 = kilo J/(km kg)
+  (running-acc () (m* walking-acc))
+  (cycling-acc () 1.62)
+  (swimming-acc () 16.96)
+  ; Energy required to lift 10kg for 2 m high: (convert* (m* lifting-energy 2 m 10 kg) 'J)
+  (lifting-acc () (m* gravity))
   )
 
 (define-dimension force (N newton (m* kg m '(s -2)))
@@ -224,14 +233,5 @@
 (define-unit light-year   (m* c year))
 (define-unit light-second (m* c second))
 (define-unit light-minute (m* c minute))
-
-;; http://en.wikipedia.org/wiki/Bicycle_performance#Energy_efficiency
-; A 80kg person walking for 3km uses (convert* (m* 80 kg 3 km walking-energy) 'Cal) kilo calories
-(define walking-energy (m* 3.78 kilo J (m/ 1 km kg)))
-(define running-energy walking-energy)
-(define cycling-energy (m* 1.62 kilo J (m/ 1 km kg)))
-(define swimming-energy (m* 16.96 kilo J (m/ 1 km kg)))
-; Energy required to lift 10kg for 2 m high: (convert* (m* lifting-energy 2 m 10 kg) 'J)
-(define lifting-energy gravity) ; 
 
 

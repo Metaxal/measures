@@ -5,6 +5,7 @@
          (for-syntax racket/base racket/syntax))
 
 (provide convert*
+         (rename-out [convert* convert])
          make-dimension-contract
          define-unit
          define-units

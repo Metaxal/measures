@@ -8,7 +8,6 @@
          racket/match
          racket/list)
 
-;;; No automatic conversion between measures
 ;;; See http://en.wikipedia.org/wiki/SI_derived_unit
 
 ;;;
@@ -178,8 +177,6 @@
   (measure>= >=)
   (measure= =))
 
-;; Tests
-
 (module+ test
   (require rackunit)
   (define metre (unit 'm 1))
@@ -294,8 +291,11 @@
                 (m* '(11 s)))
   
   (check-true (m< -5 1 2 4 7 10))
+  (check-false (m< -5 1 2 4 10 10))
   (check-true (m> 3 2 -4))
   (check-false (m> 3 4 -4))
+  (check-true (m<= 1 2 4))
+  (check-true (m<= 1 2 2))
   (check-true (m>= 3 2 2))
   (check-true (m= 2 '(2)))
   (check-exn exn:fail:unit? (λ()(m= 3 '(3 s))))

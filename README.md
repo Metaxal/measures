@@ -26,15 +26,15 @@ Say you are traveling at 50 miles per hour:
 How many kilometers/hour is that?
 
 ```racket
-> (measure->value (convert* my-speed '(km (h -1))))
-'(80.46719999999999 km (h -1))                     
+> (measure->value (convert my-speed '(km (h -1))))
+'(80.46719999999999 km (h -1))                    
 ```
 
 How many kilometers do you travel during 5 minutes?
 
 ```racket
-> (measure->value (convert* (m* my-speed 5 min) 'km))
-'(6.7056000000000004 km)                             
+> (measure->value (convert (m* my-speed 5 min) 'km))
+'(6.7056000000000004 km)                            
 ```
 
 You are quite late and have only 13 minutes left before your meeting,
@@ -42,8 +42,8 @@ and you are 21 miles away. How fast would you need to go to be there in
 time?
 
 ```racket
-> (measure->value (convert* (m/ (m* 21.0 mi) (m* 13 min)) '(mi (h -1))))
-'(96.9230769230769 mi (h -1))                                           
+> (measure->value (convert (m/ (m* 21.0 mi) (m* 13 min)) '(mi (h -1))))
+'(96.9230769230769 mi (h -1))                                          
 ```
 
 ## 2. Basic definitions
@@ -184,34 +184,33 @@ Got: #<set: #(struct:unit m 1)> and #<set: #(struct:unit mi
 Known quoted  units can still be converted back to SI units:
 
 ```racket
-> (convert* (m* 3 'mi))               
+> (convert (m* 3 'mi))                
 (measure 603504/125 (set (unit 'm 1)))
 ```
 
-Using the `convert*` function it is also possible to request a
-conversion from SI units to non-SI units (or, more precisely,
-non-SI-base units):
+Using the `convert` function it is also possible to request a conversion
+from SI units to non-SI units (or, more precisely, non-SI-base units):
 
 ```racket
-> (convert* (m* 3 m)                                   
+> (convert (m* 3 m)                                    
             'mile)                                     
 (measure 125/67056 (set (unit 'mi 1)))                 
-> (convert* (m* 3 ft (m/ s))                           
+> (convert (m* 3 ft (m/ s))                            
             '(mi (h -1)))                              
 (measure 45/22 (set (unit 'mi 1) (unit 'h -1)))        
-> (convert* (m* 10 hecto Pa) 'mmHg)                    
+> (convert (m* 10 hecto Pa) 'mmHg)                     
 (measure 1250000/166653 (set (unit 'mmHg 1)))          
 > (m* 2 Pa 3 m m)                                      
 (measure 6 (set (unit 'kg 1) (unit 'm 1) (unit 's -2)))
-> (convert* (m* 2 Pa 3 m m) 'N)                        
+> (convert (m* 2 Pa 3 m m) 'N)                         
 (measure 6 (set (unit 'N 1)))                          
 ```
 
 It can also be used to convert to unit prefixes:
 
 ```racket
-> (measure->value (convert* (m* 3 kilo Pa) '(hecto Pa)))
-'(30 Pa h.)                                             
+> (measure->value (convert (m* 3 kilo Pa) '(hecto Pa)))
+'(30 Pa h.)                                            
 ```
 
 Notes:
@@ -221,7 +220,7 @@ Notes:
 * The order of "units" is first by exponent then alphabetical (ASCII),
   this is why the `h.` is after `Pa`.
 
-The `convert*` function accepts a measure and either:
+The `convert` function accepts a measure and either:
 
 * the `'base` symbol (default), to convert to base (SI by default)
   units,
@@ -235,21 +234,21 @@ quoted units. For example, this is not what we want (although it is
 correct):
 
 ```racket
-> (convert* (m* 3 'mi) 'yd)                                    
+> (convert (m* 3 'mi) 'yd)                                     
 (measure 1250/381 (set (unit 'yd 1) (unit 'mi 1) (unit 'm -1)))
 ```
 
 This is what we want:
 
 ```racket
-> (convert* (m* 3 'mi) '(base yd))
-(measure 5280 (set (unit 'yd 1))) 
+> (convert (m* 3 'mi) '(base yd))
+(measure 5280 (set (unit 'yd 1)))
 ```
 
 But of course, without quoted units, we could have written:
 
 ```racket
-> (convert* (m* 3 mi) 'yd)       
+> (convert (m* 3 mi) 'yd)        
 (measure 5280 (set (unit 'yd 1)))
 ```
 
