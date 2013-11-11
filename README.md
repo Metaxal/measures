@@ -123,9 +123,9 @@ symbol, and the long name is more descriptive:
 
 ```racket
 > mmHg                                                            
-(measure 166653/1250 (set (unit 'kg 1) (unit 'm -1) (unit 's -2)))
+(measure 166653/1250 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
 > millimetre-of-mercury                                           
-(measure 166653/1250 (set (unit 'kg 1) (unit 'm -1) (unit 's -2)))
+(measure 166653/1250 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
 ```
 
 By default, all units are converted to SI units. This allows to perform
@@ -135,9 +135,9 @@ For example:
 
 ```racket
 > N                                                     
-(measure 1 (set (unit 'kg 1) (unit 'm 1) (unit 's -2))) 
+(measure 1 (set (unit 'm 1) (unit 's -2) (unit 'kg 1))) 
 > Pa                                                    
-(measure 1 (set (unit 'kg 1) (unit 'm -1) (unit 's -2)))
+(measure 1 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
 > (m/ (m* 3 N) (m* 2 Pa))                               
 (measure 3/2 (set (unit 'm 2)))                         
 > (m* 3 mi)                                             
@@ -201,7 +201,7 @@ from SI units to non-SI units (or, more precisely, non-SI-base units):
 > (convert (m* 10 hecto Pa) 'mmHg)                     
 (measure 1250000/166653 (set (unit 'mmHg 1)))          
 > (m* 2 Pa 3 m m)                                      
-(measure 6 (set (unit 'kg 1) (unit 'm 1) (unit 's -2)))
+(measure 6 (set (unit 'm 1) (unit 's -2) (unit 'kg 1)))
 > (convert (m* 2 Pa 3 m m) 'N)                         
 (measure 6 (set (unit 'N 1)))                          
 ```
@@ -235,7 +235,7 @@ correct):
 
 ```racket
 > (convert (m* 3 'mi) 'yd)                                     
-(measure 1250/381 (set (unit 'yd 1) (unit 'mi 1) (unit 'm -1)))
+(measure 1250/381 (set (unit 'mi 1) (unit 'yd 1) (unit 'm -1)))
 ```
 
 This is what we want:
@@ -292,7 +292,29 @@ speed: contract violation
   at: eval:37.0                                   
 ```
 
-## 5. Chemical elements
+## 5. A ’measures’ language
+
+The `measures/lang` language can be used as a short-hand to have all of
+`racket` plus all of of `measures` except that the measures arithmetic
+operators (`m+`, etc.) replace the normal ones (`+`, etc.).
+
+As a consequence, one can write:
+
+```racket
+#lang s-exp measures/lang
+                         
+(+ (* 5 mi) (* 5 km))    
+```
+
+This is also useful to be used in a terminal by invoking:
+
+```racket
+racket -li measures/lang
+```
+
+This opens an interaction session where `measures/lang` is loaded.
+
+## 6. Chemical elements
 
 The `measures/chemical-elements` provides the vector `elements` of the
 118 elements with a number of procedures to extract their information:
@@ -321,7 +343,7 @@ Examples:
 (measure 0.40600800000000004 (set (unit 'kg 1)))
 ```
 
-## 6. Related resources
+## 7. Related resources
 
 Some [useful
 conversions](http://en.wikipedia.org/wiki/Conversion\_of\_units) can be
@@ -334,7 +356,7 @@ units library](http://code.google.com/p/clj-units/).
 You may also be interested in [Doug Williams scientific
 collection](http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html).
 
-## 7. License and Disclaimer
+## 8. License and Disclaimer
 
 Copyright (c) 2013 Laurent Orseau
 
