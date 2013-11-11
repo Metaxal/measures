@@ -208,6 +208,25 @@ This also defines the @racket[time/c] contract that can be used in function cont
 (speed (m* 5 mile) (m* 2 hour))
 (speed (m* 5 mile) (m* 2 metre))]
 
+@section{A 'measures' language}
+
+The @racket[measures/lang] language can be used as a short-hand to have all of @racket[racket] plus 
+all of of @racket[measures] except that the measures arithmetic operators (@racket[m+], etc.) 
+replace the normal ones (@racket[+], etc.).
+
+As a consequence, one can write:
+@codeblock|{
+#lang s-exp measures/lang
+
+(+ (* 5 mi) (* 5 km))
+}|
+
+This is also useful to be used in a terminal by invoking:
+@codeblock|{
+racket -li measures/lang
+}|
+This opens an interaction session where @racket[measures/lang] is loaded.
+
 @section{Chemical elements}
 
 The @racket[measures/chemical-elements] provides the vector @racket[elements]
