@@ -72,9 +72,13 @@
   (pt    pint           (m/ quart 2))
   (gi    gill           (m/ pint 4))
   (floz  fluid-ounce    (m/ pint 16))
+  (Tsp   tablespoon     (m* fluid-ounce 2))
   (fldr  fluid-dram     (m/ fluid-ounce 8))
+  (tsp   teaspoon       (m/ tablespoon 3))
   (lbbl  liquid-barrel  (m* #e31.5 gallon))
   (bbl   oil-barrel     (m* 42 gallon))
+  ; http://en.wikipedia.org/wiki/Drop_%28unit%29
+  (gtt drop (m/ millilitre 20))
   )
 
 (define-dimension mass (kg kilogram)
