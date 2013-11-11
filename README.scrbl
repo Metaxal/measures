@@ -17,6 +17,7 @@ First some @bold{warnings}:
       @hyperlink["https://github.com/Metaxal/measures/issues" "report any error that you find"].}
 @item{Be cautious with non-linear converters (e.g., °F to K), as converting a temperature difference
       is not the same as converting a temperature.}
+@item{Some bindings from @racket[racket] may be redefined, like @racket[second] and @racket[min].}
 ]
 
 @section{Quick example}

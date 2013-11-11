@@ -12,6 +12,8 @@ First some **warnings**:
 * Be cautious with non-linear converters (e.g., °F to K), as converting
   a temperature difference is not the same as converting a temperature.
 
+* Some bindings from `racket` may be redefined, like `second` and `min`.
+
 ## 1. Quick example
 
 Say you are traveling at 50 miles per hour:
