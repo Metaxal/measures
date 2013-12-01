@@ -123,11 +123,13 @@
   (y    year    (m* #e365.25 day))
   )
 
-; Radians areactually dimensionless, but still keep the symbol to ensure type-safety
+; Radians areactually dimensionless, but still keep the symbol to ensure type-safety.
+; Otherwise one would be allowed to add
+; radians with degrees, since both are dimensionless
 (define-dimension angle (rad radian)
   (° degree (m/ pi 180)))
 
-(define-dimension solid-angle (sr steradian (m* 1)))
+(define-dimension solid-angle (sr steradian))
 
 (define-dimension frequency (Hz hertz (m/ s)))
 
