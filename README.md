@@ -12,7 +12,8 @@ First some **warnings**:
 * Be cautious with non-linear converters (e.g., °F to K), as converting
   a temperature difference is not the same as converting a temperature.
 
-* Some bindings from `racket` may be redefined, like `second` and `min`.
+* Some bindings from `racket` may be redefined, like `second`, `min` and
+  `drop`. You can use `rename-in` to change these name on `require`.
 
 ## 1. Quick example
 
@@ -125,9 +126,9 @@ symbol, and the long name is more descriptive:
 
 ```racket
 > mmHg                                                            
-(measure 166653/1250 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
+(measure 166653/1250 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
 > millimetre-of-mercury                                           
-(measure 166653/1250 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
+(measure 166653/1250 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
 ```
 
 By default, all units are converted to SI units. This allows to perform
@@ -137,9 +138,9 @@ For example:
 
 ```racket
 > N                                                     
-(measure 1 (set (unit 'm 1) (unit 's -2) (unit 'kg 1))) 
+(measure 1 (set (unit 'm 1) (unit 'kg 1) (unit 's -2))) 
 > Pa                                                    
-(measure 1 (set (unit 's -2) (unit 'kg 1) (unit 'm -1)))
+(measure 1 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
 > (m/ (m* 3 N) (m* 2 Pa))                               
 (measure 3/2 (set (unit 'm 2)))                         
 > (m* 3 mi)                                             
@@ -203,7 +204,7 @@ from SI units to non-SI units (or, more precisely, non-SI-base units):
 > (convert (m* 10 hecto Pa) 'mmHg)                     
 (measure 1250000/166653 (set (unit 'mmHg 1)))          
 > (m* 2 Pa 3 m m)                                      
-(measure 6 (set (unit 'm 1) (unit 's -2) (unit 'kg 1)))
+(measure 6 (set (unit 'm 1) (unit 'kg 1) (unit 's -2)))
 > (convert (m* 2 Pa 3 m m) 'N)                         
 (measure 6 (set (unit 'N 1)))                          
 ```
