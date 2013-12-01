@@ -123,7 +123,8 @@
   (y    year    (m* #e365.25 day))
   )
 
-(define-dimension angle (rad radian (m* 1)) ; dimensionless
+; Radians areactually dimensionless, but still keep the symbol to ensure type-safety
+(define-dimension angle (rad radian)
   (° degree (m/ pi 180)))
 
 (define-dimension solid-angle (sr steradian (m* 1)))
