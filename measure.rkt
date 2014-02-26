@@ -4,6 +4,7 @@
 ;;; License: LGPL (see LICENSE)
 
 (require racket/contract
+         racket/generic
          racket/set
          racket/match
          racket/list)
@@ -30,10 +31,26 @@
          dsl-unit/c dsl-measure/c
          )
 
+#;(define (measure-print m port mode)
+  (define v (measure->value m))
+  (case mode
+    [(#t) (write v port)]
+    [(#f) (display v port)]
+    [else 
+     (define (disp x) (print x port mode))
+     (disp (list 'measure (measure-quantity m) (measure-units m) 0))]))
+
 ;; symbol : symbol? ; SI symbol
 ;; expt : number? ; exponent
 (struct unit (symbol expt)
-  #:transparent)
+  #:transparent
+  #;#;#:methods gen:custom-write
+  #;[(define/generic super-write write-proc)
+   (define (write-proc u port mode)
+     (case mode
+       [(#t) (write (unit->value u) port)]
+       [(#f) (display (unit->value u) port)]
+       [else (super-write u port mode)]))])
 
 (struct exn:fail:unit exn:fail ())
 
@@ -66,6 +83,14 @@
 (define/contract (measure-zero? v)
   (measure? . -> . boolean?)
   (zero? (measure-quantity v)))
+
+(define/contract (measure-number? n)
+  (measure? . -> . boolean?)
+  (set-empty? (measure-units n)))
+
+(module+ test
+  (check-true (measure-number? (m* 12)))
+  (check-false (measure-number? (m* 12 's))))
 
 (define/contract (measure-units-equal? m1 m2)
   (measure? measure? . -> . boolean?)
@@ -156,11 +181,13 @@
   (measure? measure? . -> . measure?)
   (measure-multiply m1 (measure-inverse m2)))
 
+;; exp : measure-number? ; must be dimension-less
 (define/contract (measure-expt m1 exp)
-  (measure? number? . -> . measure?)
-  (measure (expt (measure-quantity m1) exp)
+  (measure? measure-number? . -> . measure?)
+  (define exp-n (measure-quantity exp))
+  (measure (expt (measure-quantity m1) exp-n)
            (list->set (set-map (measure-units m1)
-                               (λ(u)(unit (unit-symbol u) (* exp (unit-expt u))))))))
+                               (λ(u)(unit (unit-symbol u) (* exp-n (unit-expt u))))))))
 
 (define-syntax-rule (define-measure-cmp (name op) ...)
   (begin
@@ -197,7 +224,7 @@
   (check-exn exn:fail:unit?
              (λ()(measure-add m1 m2)))
   
-  (check-equal? (measure-expt m1 2)
+  (check-equal? (measure-expt m1 (measure 2 (set)))
                 (measure 16 (set (unit 'm 2))))
   
   (check-exn exn:fail:unit?
@@ -264,7 +291,7 @@
      (apply m* m1 (map measure-inverse (map ->measure vl)))]))
 
 (define (m^ m1 exp)
-  (measure-expt (->measure m1) exp))
+  (measure-expt (->measure m1) (->measure exp)))
 
 (define-values
   (m< m> m<= m>= m=)
@@ -289,6 +316,9 @@
   
   (check-equal? (m- '(23 s) '(2 s) '(10 s))
                 (m* '(11 s)))
+  
+  (check-equal? (m^ 2 3)
+                (m* 8))
   
   (check-true (m< -5 1 2 4 7 10))
   (check-false (m< -5 1 2 4 10 10))
