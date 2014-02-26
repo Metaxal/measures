@@ -139,7 +139,7 @@
   ;
   (km/h kilometre-per-hour (m/ km h))
   ;
-  (mi/h mile-per-hour (m/ mi h))
+  (mi/h (mile-per-hour mph) (m/ mi h))
   )
 
 ; 1 m/s2 = 1 J/(m×kg)s
