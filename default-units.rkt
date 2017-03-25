@@ -234,8 +234,8 @@
 (define (fahrenheit->kelvin m)
   (m* (m+ m 459.67) 5/9))
 
-(define-unit h-plank  planck-constant  (m* 6.62606957e-34 J s))
-(define-unit ħ        h-bar            (m/ h (m* 2 pi)))
+(define-unit h-planck  planck-constant  (m* 6.626070040e-34 J s))
+(define-unit ħ         h-bar            (m/ h-planck (m* 2 pi)))
 
 (define-unit light-year   (m* c year))
 (define-unit light-second (m* c second))
