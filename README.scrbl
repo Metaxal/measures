@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@; compile with @racket[scribble --markdown this-file.scrbl]
+@; compile with @racket[scribble --markdown README.scrbl]
 
 @(require scribble/eval
           (for-label racket/base racket/contract racket/string))
@@ -261,6 +261,8 @@ can be found on Wikipedia (to be trusted with caution of course).
 This collection was partly inspired by 
 @hyperlink["http://futureboy.us/frinkdocs/" "the Frink programming language"]
 and Konrad Hinsen's @hyperlink["http://code.google.com/p/clj-units/" "Clojure units library"].
+
+See also AlexKnauth's @hyperlink["https://github.com/AlexKnauth/measures-with-dimensions" "measures-with-dimensions"].
 
 You may also be interested in
 @hyperlink["http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html"

@@ -9,8 +9,9 @@ First some **warnings**:
   please [report any error that you
   find](https://github.com/Metaxal/measures/issues).
 
-* Be cautious with non-linear converters (e.g., °F to K), as converting
-  a temperature difference is not the same as converting a temperature.
+* Be cautious with non-linear converters \(e.g., °F to K\), as
+  converting a temperature difference is not the same as converting a
+  temperature.
 
 * Some bindings from `racket` may be redefined, like `second`, `min` and
   `drop`. You can use `rename-in` to change these name on `require`.
@@ -21,7 +22,6 @@ Say you are traveling at 50 miles per hour:
 
 ```racket
 > (define my-speed (m* 50.0 mile (m/ hour)))
-                                            
 > (measure->value my-speed)                 
 '(22.352 m (s -1))                          
 ```
@@ -54,13 +54,13 @@ time?
 A `unit` is a symbol and an exponent. A `measure` is a number and a set
 of units.
 
-Basic arithmetic operations (`m+` `m-` `m*` `m/` `m^`) are defined to
+Basic arithmetic operations \(`m+` `m-` `m*` `m/` `m^`\) are defined to
 work with measures.
 
 To ease human interaction, measures can be written in an simple Domain
-Specific Language (DSL). A DSL measure can then be:
+Specific Language \(DSL\). A DSL measure can then be:
 
-* a (struct) measure,
+* a \(struct\) measure,
 
 * a number,
 
@@ -70,9 +70,9 @@ Specific Language (DSL). A DSL measure can then be:
 
 A DSL unit can be:
 
-* a (struct) unit,
+* a \(struct\) unit,
 
-* a symbol alone (taking the exponent 1 by default),
+* a symbol alone \(taking the exponent 1 by default\),
 
 * a list with a symbol and an exponent.
 
@@ -84,7 +84,7 @@ You can use the multiplication operator `m*` to easily build measures.
 > (m* 3 's)                               
 (measure 3 (set (unit 's 1)))             
 > (m* 3 's '(m -1))                       
-(measure 3 (set (unit 's 1) (unit 'm -1)))
+(measure 3 (set (unit 'm -1) (unit 's 1)))
 ```
 
 The arithmetic operators automatically convert DSL measures into
@@ -114,7 +114,7 @@ Adding or subtracting measures with different units raises an
 > (measure->value (m+ '(3 m (h -1)) '(2 m h)))        
 Error: Measures must have the same units.             
 Got: #<set: #(struct:unit m 1) #(struct:unit h 1)> and
-#<set: #(struct:unit m 1) #(struct:unit h -1)>        
+#<set: #(struct:unit h -1) #(struct:unit m 1)>        
 > (measure->value (m+ '(3 m (h -1)) '(2 m (h -1))))   
 '(5 m (h -1))                                         
 ```
@@ -126,9 +126,9 @@ symbol, and the long name is more descriptive:
 
 ```racket
 > mmHg                                                            
-(measure 166653/1250 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
+(measure 166653/1250 (set (unit 'm -1) (unit 's -2) (unit 'kg 1)))
 > millimetre-of-mercury                                           
-(measure 166653/1250 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
+(measure 166653/1250 (set (unit 'm -1) (unit 's -2) (unit 'kg 1)))
 ```
 
 By default, all units are converted to SI units. This allows to perform
@@ -138,9 +138,9 @@ For example:
 
 ```racket
 > N                                                     
-(measure 1 (set (unit 'm 1) (unit 'kg 1) (unit 's -2))) 
+(measure 1 (set (unit 'm 1) (unit 's -2) (unit 'kg 1))) 
 > Pa                                                    
-(measure 1 (set (unit 'kg 1) (unit 's -2) (unit 'm -1)))
+(measure 1 (set (unit 'm -1) (unit 's -2) (unit 'kg 1)))
 > (m/ (m* 3 N) (m* 2 Pa))                               
 (measure 3/2 (set (unit 'm 2)))                         
 > (m* 3 mi)                                             
@@ -157,8 +157,8 @@ quoting the short name:
 (measure 3 (set (unit 'mi 1)))
 ```
 
-(Note that quoting is nicely the same as "prevent reduction" to base
-units.) Quoted units can be useful in particular in text files from
+\(Note that quoting is nicely the same as "prevent reduction" to base
+units.\) Quoted units can be useful in particular in text files from
 which to read measures. They can of course be used together:
 
 ```racket
@@ -192,7 +192,7 @@ Known quoted  units can still be converted back to SI units:
 ```
 
 Using the `convert` function it is also possible to request a conversion
-from SI units to non-SI units (or, more precisely, non-SI-base units):
+from SI units to non-SI units \(or, more precisely, non-SI-base units\):
 
 ```racket
 > (convert (m* 3 m)                                    
@@ -200,11 +200,11 @@ from SI units to non-SI units (or, more precisely, non-SI-base units):
 (measure 125/67056 (set (unit 'mi 1)))                 
 > (convert (m* 3 ft (m/ s))                            
             '(mi (h -1)))                              
-(measure 45/22 (set (unit 'mi 1) (unit 'h -1)))        
+(measure 45/22 (set (unit 'h -1) (unit 'mi 1)))        
 > (convert (m* 10 hecto Pa) 'mmHg)                     
 (measure 1250000/166653 (set (unit 'mmHg 1)))          
 > (m* 2 Pa 3 m m)                                      
-(measure 6 (set (unit 'm 1) (unit 'kg 1) (unit 's -2)))
+(measure 6 (set (unit 'm 1) (unit 's -2) (unit 'kg 1)))
 > (convert (m* 2 Pa 3 m m) 'N)                         
 (measure 6 (set (unit 'N 1)))                          
 ```
@@ -220,12 +220,12 @@ Notes:
 
 * Prefixes are followed by a dot to avoid name collision with units.
 
-* The order of "units" is first by exponent then alphabetical (ASCII),
+* The order of "units" is first by exponent then alphabetical \(ASCII\),
   this is why the `h.` is after `Pa`.
 
 The `convert` function accepts a measure and either:
 
-* the `'base` symbol (default), to convert to base (SI by default)
+* the `'base` symbol \(default\), to convert to base \(SI by default\)
   units,
 
 * a DSL unit,
@@ -233,12 +233,12 @@ The `convert` function accepts a measure and either:
 * a list of symbols and DSL units.
 
 It can then be used to convert quoted units to SI units and back to
-quoted units. For example, this is not what we want (although it is
-correct):
+quoted units. For example, this is not what we want \(although it is
+correct\):
 
 ```racket
 > (convert (m* 3 'mi) 'yd)                                     
-(measure 1250/381 (set (unit 'mi 1) (unit 'yd 1) (unit 'm -1)))
+(measure 1250/381 (set (unit 'm -1) (unit 'yd 1) (unit 'mi 1)))
 ```
 
 This is what we want:
@@ -281,9 +281,8 @@ contracts:
 > (define/contract (speed a-distance a-time)      
     (length/c time/c . -> . velocity/c)           
     (m/ a-distance a-time))                       
-                                                  
 > (speed (m* 5 mile) (m* 2 hour))                 
-(measure 1397/1250 (set (unit 'm 1) (unit 's -1)))
+(measure 1397/1250 (set (unit 's -1) (unit 'm 1)))
 > (speed (m* 5 mile) (m* 2 metre))                
 speed: contract violation                         
   expected: time/c                                
@@ -292,6 +291,7 @@ speed: contract violation
       (-> length/c time/c velocity/c)             
   contract from: (function speed)                 
   blaming: top-level                              
+   (assuming the contract is correct)             
   at: eval:37.0                                   
 ```
 
@@ -299,7 +299,7 @@ speed: contract violation
 
 The `measures/lang` language can be used as a short-hand to have all of
 `racket` plus all of of `measures` except that the measures arithmetic
-operators (`m+`, etc.) replace the normal ones (`+`, etc.).
+operators \(`m+`, etc.\) replace the normal ones \(`+`, etc.\).
 
 As a consequence, one can write:
 
@@ -325,13 +325,13 @@ The `measures/chemical-elements` provides the vector `elements` of the
 `atomic-weight` `density` `melting-point` `boiling-point`
 `heat-capacity` `electronegativity` `abundance`.
 
-Each procedure accepts either a number (the atomic number) or a symbol
-(either the atomic symbol or the name of the chemical element).
+Each procedure accepts either a number \(the atomic number\) or a symbol
+\(either the atomic symbol or the name of the chemical element\).
+
+Examples:
 
 ```racket
-Examples:                                       
 > (require measures/chemical-elements)          
-                                                
 > (atomic-number 'Oxygen)                       
 8                                               
 > (atomic-symbol 'Iron)                         
@@ -349,19 +349,22 @@ Examples:
 ## 7. Related resources
 
 Some [useful
-conversions](http://en.wikipedia.org/wiki/Conversion\_of\_units) can be
-found on Wikipedia (to be trusted with caution of course).
+conversions](http://en.wikipedia.org/wiki/Conversion_of_units) can be
+found on Wikipedia \(to be trusted with caution of course\).
 
 This collection was partly inspired by [the Frink programming
 language](http://futureboy.us/frinkdocs/) and Konrad Hinsen’s [Clojure
 units library](http://code.google.com/p/clj-units/).
+
+See also AlexKnauth’s
+[measures-with-dimensions](https://github.com/AlexKnauth/measures-with-dimensions).
 
 You may also be interested in [Doug Williams scientific
 collection](http://planet.racket-lang.org/package-source/williams/science.plt/4/2/planet-docs/science/physical-constants.html).
 
 ## 8. License and Disclaimer
 
-Copyright (c) 2013 Laurent Orseau
+Copyright \(c\) 2013 Laurent Orseau
 
 Licensed under the GNU LGPL. See LICENSE.
 
