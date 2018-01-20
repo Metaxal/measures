@@ -5,3 +5,6 @@
 
 (define build-deps
   '("at-exp-lib" "rackunit-lib"))
+
+(define scribblings
+  '(["README.scrbl" () (library) "measures"]))
